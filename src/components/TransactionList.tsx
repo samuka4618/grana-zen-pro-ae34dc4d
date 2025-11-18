@@ -6,6 +6,7 @@ import { Transaction } from "@/hooks/useTransactionsStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EditCategoryDialog } from "./EditCategoryDialog";
+import { AttachmentViewer } from "./AttachmentViewer";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -37,7 +38,7 @@ export function TransactionList({ transactions, onUpdateCategory }: TransactionL
                     <ArrowDownCircle className="h-5 w-5 text-danger" />
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="font-medium">{transaction.description}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="flex items-center gap-1">
@@ -55,6 +56,9 @@ export function TransactionList({ transactions, onUpdateCategory }: TransactionL
                     <span className="text-xs text-muted-foreground">
                       {format(transaction.date, "dd/MM/yyyy", { locale: ptBR })}
                     </span>
+                    {transaction.attachmentUrl && (
+                      <AttachmentViewer attachmentUrl={transaction.attachmentUrl} />
+                    )}
                   </div>
                 </div>
               </div>

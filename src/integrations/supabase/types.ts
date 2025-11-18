@@ -155,6 +155,7 @@ export type Database = {
       transactions: {
         Row: {
           amount: number
+          attachment_url: string | null
           category: string
           created_at: string | null
           date: string
@@ -165,6 +166,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          attachment_url?: string | null
           category: string
           created_at?: string | null
           date?: string
@@ -175,6 +177,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          attachment_url?: string | null
           category?: string
           created_at?: string | null
           date?: string
