@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvestmentsStore } from "@/hooks/useInvestmentsStore";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { formatCurrency } from "@/lib/currency";
 
 const COLORS = [
   "hsl(var(--chart-1))",
@@ -82,7 +83,7 @@ export const InvestmentDiversification = () => {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+                formatter={(value: number) => formatCurrency(value)}
               />
               <Legend />
             </PieChart>
@@ -100,7 +101,7 @@ export const InvestmentDiversification = () => {
                 <span className="font-medium">{item.name}</span>
               </div>
               <div className="text-right">
-                <p className="font-semibold">R$ {item.value.toFixed(2)}</p>
+                <p className="font-semibold tabular-nums">{formatCurrency(item.value)}</p>
                 <p className="text-sm text-muted-foreground">
                   {item.percentage}%
                 </p>

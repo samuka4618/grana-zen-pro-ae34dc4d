@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useBudgetsStore } from '@/hooks/useBudgetsStore';
 import { useCategoriesStore } from '@/hooks/useCategoriesStore';
+import { CurrencyInput } from './CurrencyInput';
+import { formatCurrency, parseCurrency } from '@/lib/currency';
 
 interface BudgetManagerProps {
   selectedDate: Date;
@@ -31,7 +33,7 @@ export const BudgetManager = ({ selectedDate }: BudgetManagerProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const numAmount = parseFloat(amount);
+    const numAmount = parseCurrency(amount);
     
     if (!selectedCategory || numAmount <= 0) {
       return;
@@ -137,19 +139,16 @@ export const BudgetManager = ({ selectedDate }: BudgetManagerProps) => {
                       </Button>
                     )}
                   </div>
-                  <Input
+                  <CurrencyInput
                     id="amount"
-                    type="number"
-                    placeholder="0.00"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    step="0.01"
-                    min="0"
+                    onChange={setAmount}
+                    placeholder="0,00"
                     required
                   />
                   {suggestedAmount && (
-                    <p className="text-xs text-muted-foreground">
-                      Sugestão baseada nos últimos 3 meses: R$ {suggestedAmount.toFixed(2)}
+                    <p className="text-xs text-muted-foreground tabular-nums">
+                      Sugestão baseada nos últimos 3 meses: {formatCurrency(suggestedAmount)}
                     </p>
                   )}
                 </div>
@@ -187,8 +186,8 @@ export const BudgetManager = ({ selectedDate }: BudgetManagerProps) => {
               >
                 <div>
                   <p className="font-medium">{budget.category}</p>
-                  <p className="text-sm text-muted-foreground">
-                    R$ {budget.planned_amount.toFixed(2)}
+                  <p className="text-sm text-muted-foreground tabular-nums">
+                    {formatCurrency(budget.planned_amount)}
                   </p>
                 </div>
                 <div className="flex gap-2">

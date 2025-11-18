@@ -12,6 +12,9 @@ import { transactionSchema } from "@/lib/validations";
 import { AttachmentUpload } from "./AttachmentUpload";
 import { AccountSelector } from "./AccountSelector";
 
+import { CurrencyInput } from "./CurrencyInput";
+import { parseCurrency } from "@/lib/currency";
+
 interface QuickAddTransactionProps {
   onAdd: (description: string, amount: number, category: string, type: "income" | "expense", dateOrAttachmentUrl?: string | Date, attachmentUrl?: string, bankAccountId?: string) => void;
 }
@@ -31,7 +34,8 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const numAmount = parseFloat(amount);
+    // Parse do valor formatado em BRL
+    const numAmount = parseCurrency(amount);
     
     // Validação com Zod
     const validation = transactionSchema.safeParse({
@@ -94,16 +98,13 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="amount">Valor</Label>
-          <Input
+          <Label htmlFor="amount">Valor (R$)</Label>
+          <CurrencyInput
             id="amount"
-            type="number"
-            step="0.01"
-            min="0.01"
-            max="999999999.99"
-            placeholder="0,00"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={setAmount}
+            placeholder="0,00"
+            required
           />
         </div>
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
 import { Building2, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "@/lib/currency";
 
 export function BankAccountsOverview() {
   const navigate = useNavigate();
@@ -36,8 +37,8 @@ export function BankAccountsOverview() {
       <div className="space-y-3">
         <div className="p-4 rounded-lg bg-muted/50">
           <p className="text-sm text-muted-foreground">Saldo Total</p>
-          <p className="text-2xl font-bold text-primary">
-            R$ {totalBalance.toFixed(2)}
+          <p className="text-2xl font-bold text-primary tabular-nums">
+            {formatCurrency(totalBalance)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             {activeAccounts.length} conta{activeAccounts.length !== 1 ? 's' : ''} ativa{activeAccounts.length !== 1 ? 's' : ''}
@@ -54,8 +55,8 @@ export function BankAccountsOverview() {
                 />
                 <p className="text-xs font-medium truncate">{account.name}</p>
               </div>
-              <p className="text-sm font-semibold">
-                R$ {account.currentBalance.toFixed(2)}
+              <p className="text-sm font-semibold tabular-nums">
+                {formatCurrency(account.currentBalance)}
               </p>
             </div>
           ))}

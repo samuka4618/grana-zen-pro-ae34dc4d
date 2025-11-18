@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { ArrowUpCircle, ArrowDownCircle, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatCurrency } from "@/lib/currency";
 
 interface TopTransactionsProps {
   transactions: Transaction[];
@@ -53,8 +54,8 @@ export function TopTransactions({ transactions }: TopTransactionsProps) {
                     </div>
                   </div>
                 </div>
-                <span className="font-semibold text-danger">
-                  R$ {transaction.amount.toFixed(2)}
+                <span className="font-semibold text-danger tabular-nums">
+                  {formatCurrency(transaction.amount)}
                 </span>
               </div>
             ))
@@ -92,8 +93,8 @@ export function TopTransactions({ transactions }: TopTransactionsProps) {
                     </div>
                   </div>
                 </div>
-                <span className="font-semibold text-success">
-                  R$ {transaction.amount.toFixed(2)}
+                <span className="font-semibold text-success tabular-nums">
+                  {formatCurrency(transaction.amount)}
                 </span>
               </div>
             ))
