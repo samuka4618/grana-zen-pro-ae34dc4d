@@ -7,6 +7,8 @@ import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
 import { ImportData } from "@/components/ImportData";
 import { CategoryManager } from "@/components/CategoryManager";
+import { NotificationsCenter } from "@/components/NotificationsCenter";
+import { useNotificationChecker } from "@/hooks/useNotificationChecker";
 import { MonthPicker } from "@/components/MonthPicker";
 import { ExpensesByCategory } from "@/components/ExpensesByCategory";
 import { IncomeVsExpenses } from "@/components/IncomeVsExpenses";
@@ -29,6 +31,10 @@ import { ptBR } from "date-fns/locale";
 const Index = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  
+  // Initialize notification checker
+  useNotificationChecker();
+  
   const { transactions, stats, addTransaction, updateTransactionCategory } = useTransactionsStore(selectedDate);
   const {
     installments,
@@ -113,6 +119,7 @@ const Index = () => {
                 <BarChart3 className="h-4 w-4" />
                 Análise
               </Button>
+              <NotificationsCenter />
               <CategoryManager />
               <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
                 Sair

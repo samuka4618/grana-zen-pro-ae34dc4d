@@ -7,6 +7,7 @@ import { PredictiveAnalysis } from "@/components/PredictiveAnalysis";
 import { AIInsights } from "@/components/AIInsights";
 import { FinancialGoalsManager } from "@/components/FinancialGoalsManager";
 import { ExportReports } from "@/components/ExportReports";
+import { NotificationsCenter } from "@/components/NotificationsCenter";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
@@ -47,6 +48,7 @@ const Analytics = () => {
                   <ArrowLeft className="h-4 w-4" />
                   Voltar
                 </Button>
+                <NotificationsCenter />
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Análise Financeira Avançada

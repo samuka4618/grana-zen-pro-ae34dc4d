@@ -8,6 +8,7 @@ import { CreditCardStatsCards } from "@/components/CreditCardStatsCards";
 import { CreditCardUsageChart } from "@/components/CreditCardUsageChart";
 import { InvoiceTrendChart } from "@/components/InvoiceTrendChart";
 import { CategorySpendingCard } from "@/components/CategorySpendingCard";
+import { NotificationsCenter } from "@/components/NotificationsCenter";
 import { PendingInstallmentsCard } from "@/components/PendingInstallmentsCard";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -37,6 +38,7 @@ const CreditCards = () => {
                   <ArrowLeft className="h-4 w-4" />
                   Voltar
                 </Button>
+                <NotificationsCenter />
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Cartões de Crédito

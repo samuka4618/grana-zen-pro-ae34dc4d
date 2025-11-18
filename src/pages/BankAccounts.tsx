@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BankAccountsManager } from "@/components/BankAccountsManager";
 import { TransferBetweenAccounts } from "@/components/TransferBetweenAccounts";
+import { NotificationsCenter } from "@/components/NotificationsCenter";
 import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
 import { ArrowLeft, Building2, TrendingUp, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +32,7 @@ const BankAccounts = () => {
                   <ArrowLeft className="h-4 w-4" />
                   Voltar
                 </Button>
+                <NotificationsCenter />
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Contas Bancárias
