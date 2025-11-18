@@ -9,15 +9,27 @@ import { ExpensesByCategory } from "@/components/ExpensesByCategory";
 import { IncomeVsExpenses } from "@/components/IncomeVsExpenses";
 import { TopTransactions } from "@/components/TopTransactions";
 import { FinancialInsights } from "@/components/FinancialInsights";
+import { AddInstallment } from "@/components/AddInstallment";
+import { InstallmentsList } from "@/components/InstallmentsList";
+import { FutureProjection } from "@/components/FutureProjection";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
+import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { transactions, stats, addTransaction } = useTransactionsStore(selectedDate);
+  const {
+    installments,
+    addInstallment,
+    deleteInstallment,
+    getActiveInstallments,
+    getProjection,
+  } = useInstallmentsStore();
 
   const monthYear = format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
+  const projections = getProjection(5, selectedDate);
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,6 +100,11 @@ const Index = () => {
             
             <IncomeVsExpenses transactions={transactions} selectedMonth={selectedDate} />
             
+            <InstallmentsList
+              installments={getActiveInstallments()}
+              onDelete={deleteInstallment}
+            />
+            
             <TopTransactions transactions={transactions} />
             
             <TransactionList transactions={transactions} />
@@ -96,6 +113,8 @@ const Index = () => {
           {/* Right Column - Quick Actions */}
           <div className="space-y-6">
             <QuickAddTransaction onAdd={addTransaction} />
+            <AddInstallment onAdd={addInstallment} />
+            <FutureProjection projections={projections} />
           </div>
         </div>
       </div>
