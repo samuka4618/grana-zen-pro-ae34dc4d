@@ -4,6 +4,11 @@ import { MonthPicker } from "@/components/MonthPicker";
 import { CreditCardsManager } from "@/components/CreditCardsManager";
 import { AddCreditCardPurchase } from "@/components/AddCreditCardPurchase";
 import { CreditCardInvoice } from "@/components/CreditCardInvoice";
+import { CreditCardStatsCards } from "@/components/CreditCardStatsCards";
+import { CreditCardUsageChart } from "@/components/CreditCardUsageChart";
+import { InvoiceTrendChart } from "@/components/InvoiceTrendChart";
+import { CategorySpendingCard } from "@/components/CategorySpendingCard";
+import { PendingInstallmentsCard } from "@/components/PendingInstallmentsCard";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, CreditCard } from "lucide-react";
@@ -52,11 +57,24 @@ const CreditCards = () => {
           </div>
         </header>
 
+        {/* Stats Cards */}
+        <CreditCardStatsCards currentMonth={selectedDate} />
+
+        {/* Charts Grid */}
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+          <InvoiceTrendChart />
+          <CreditCardUsageChart />
+        </div>
+
         {/* Content Grid */}
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Left Column - Cards Manager */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <CreditCardsManager />
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+              <CategorySpendingCard currentMonth={selectedDate} />
+              <PendingInstallmentsCard />
+            </div>
           </div>
 
           {/* Right Column - Actions & Invoice */}
