@@ -7,20 +7,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
 import { transactionSchema } from "@/lib/validations";
 import { AttachmentUpload } from "./AttachmentUpload";
+import { AccountSelector } from "./AccountSelector";
 
 interface QuickAddTransactionProps {
-  onAdd: (description: string, amount: number, category: string, type: "income" | "expense", attachmentUrl?: string) => void;
+  onAdd: (description: string, amount: number, category: string, type: "income" | "expense", dateOrAttachmentUrl?: string | Date, attachmentUrl?: string, bankAccountId?: string) => void;
 }
 
 export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const { getCategoriesByType } = useCategoriesStore();
+  const { getActiveAccounts } = useBankAccountsStore();
   const [type, setType] = useState<"income" | "expense">("expense");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
+  const [bankAccountId, setBankAccountId] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState<string | undefined>();
+
+  const activeAccounts = getActiveAccounts();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +47,14 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
       return;
     }
 
-    onAdd(description, numAmount, category, type, attachmentUrl);
+    onAdd(description, numAmount, category, type, attachmentUrl, undefined, bankAccountId || undefined);
     toast.success(`Transação de ${type === "income" ? "receita" : "despesa"} adicionada!`);
     
     // Reset form
     setDescription("");
     setAmount("");
     setCategory("");
+    setBankAccountId("");
     setAttachmentUrl(undefined);
   };
 
@@ -115,6 +122,17 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
             </SelectContent>
           </Select>
         </div>
+
+        {activeAccounts.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="account">Conta (opcional)</Label>
+            <AccountSelector
+              value={bankAccountId}
+              onChange={setBankAccountId}
+              placeholder="Selecione a conta"
+            />
+          </div>
+        )}
 
         <AttachmentUpload
           onUploadComplete={(url) => setAttachmentUrl(url)}

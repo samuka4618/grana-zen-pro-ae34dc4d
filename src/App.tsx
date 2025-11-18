@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Analytics from "./pages/Analytics";
 import CreditCards from "./pages/CreditCards";
+import BankAccounts from "./pages/BankAccounts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CreditCards />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bank-accounts"
+              element={
+                <ProtectedRoute>
+                  <BankAccounts />
                 </ProtectedRoute>
               }
             />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3, CreditCard as CreditCardIcon } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3, CreditCard as CreditCardIcon, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
@@ -18,6 +18,7 @@ import { FutureProjection } from "@/components/FutureProjection";
 import { AddRecurringContract } from "@/components/AddRecurringContract";
 import { RecurringContractsList } from "@/components/RecurringContractsList";
 import { ExportReports } from "@/components/ExportReports";
+import { BankAccountsOverview } from "@/components/BankAccountsOverview";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
@@ -85,6 +86,15 @@ const Index = () => {
               </p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/bank-accounts")}
+                className="gap-2"
+              >
+                <Building2 className="h-4 w-4" />
+                Contas
+              </Button>
               <Button
                 variant="default"
                 size="sm"
@@ -188,6 +198,7 @@ const Index = () => {
           {/* Right Column - Quick Actions */}
           <div className="space-y-4 sm:space-y-6">
             <ExportReports chartsElementId="dashboard-charts" />
+            <BankAccountsOverview />
             <QuickAddTransaction onAdd={addTransaction} />
             <AddRecurringContract onAdd={addContract} />
             <AddInstallment onAdd={addInstallment} />
