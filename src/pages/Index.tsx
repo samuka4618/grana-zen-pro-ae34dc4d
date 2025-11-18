@@ -66,29 +66,29 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-8">
         {/* Header */}
         <header className="space-y-4">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Controle Financeiro
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Gerencie suas finanças de forma simples e poderosa
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-start sm:self-auto">
               <CategoryManager />
-              <Button variant="outline" onClick={() => supabase.auth.signOut()}>
+              <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
                 Sair
               </Button>
             </div>
           </div>
           
           {/* Month Picker */}
-          <div className="flex items-center gap-4 p-4 rounded-lg border bg-card">
-            <span className="text-sm font-medium text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-lg border bg-card">
+            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
               Período:
             </span>
             <MonthPicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
@@ -96,7 +96,7 @@ const Index = () => {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Saldo"
             value={`R$ ${adjustedStats.balance.toFixed(2)}`}
@@ -128,10 +128,10 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Left Column - Charts and Lists */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="grid gap-6 lg:grid-cols-2">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <ExpensesByCategory transactions={transactions} />
               <FinancialInsights transactions={transactions} />
             </div>
@@ -155,7 +155,7 @@ const Index = () => {
           </div>
 
           {/* Right Column - Quick Actions */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <QuickAddTransaction onAdd={addTransaction} />
             <AddRecurringContract onAdd={addContract} />
             <AddInstallment onAdd={addInstallment} />
