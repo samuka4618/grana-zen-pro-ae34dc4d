@@ -12,8 +12,11 @@ import { FinancialInsights } from "@/components/FinancialInsights";
 import { AddInstallment } from "@/components/AddInstallment";
 import { InstallmentsList } from "@/components/InstallmentsList";
 import { FutureProjection } from "@/components/FutureProjection";
+import { AddRecurringContract } from "@/components/AddRecurringContract";
+import { RecurringContractsList } from "@/components/RecurringContractsList";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
+import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -27,9 +30,19 @@ const Index = () => {
     getActiveInstallments,
     getProjection,
   } = useInstallmentsStore();
+  const {
+    contracts,
+    addContract,
+    toggleContract,
+    deleteContract,
+    getActiveContracts,
+    getMonthlyTotal,
+  } = useRecurringContractsStore();
 
   const monthYear = format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
   const projections = getProjection(5, selectedDate);
+  const recurringExpenses = getMonthlyTotal("expense");
+  const recurringIncome = getMonthlyTotal("income");
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,6 +113,12 @@ const Index = () => {
             
             <IncomeVsExpenses transactions={transactions} selectedMonth={selectedDate} />
             
+            <RecurringContractsList
+              contracts={contracts}
+              onToggle={toggleContract}
+              onDelete={deleteContract}
+            />
+            
             <InstallmentsList
               installments={getActiveInstallments()}
               onDelete={deleteInstallment}
@@ -113,8 +132,14 @@ const Index = () => {
           {/* Right Column - Quick Actions */}
           <div className="space-y-6">
             <QuickAddTransaction onAdd={addTransaction} />
+            <AddRecurringContract onAdd={addContract} />
             <AddInstallment onAdd={addInstallment} />
-            <FutureProjection projections={projections} />
+            <FutureProjection
+              projections={projections}
+              recurringExpenses={recurringExpenses}
+              recurringIncome={recurringIncome}
+              contracts={getActiveContracts()}
+            />
           </div>
         </div>
       </div>

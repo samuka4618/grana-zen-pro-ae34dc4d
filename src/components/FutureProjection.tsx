@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { RecurringContract } from "@/hooks/useRecurringContractsStore";
 
 interface ProjectionMonth {
   month: Date;
@@ -15,20 +16,44 @@ interface ProjectionMonth {
 
 interface FutureProjectionProps {
   projections: ProjectionMonth[];
+  recurringExpenses: number;
+  recurringIncome: number;
+  contracts: RecurringContract[];
 }
 
-export function FutureProjection({ projections }: FutureProjectionProps) {
+export function FutureProjection({ projections, recurringExpenses, recurringIncome, contracts }: FutureProjectionProps) {
+  const activeContracts = contracts.filter((c) => c.active);
+  
   return (
     <Card className="p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">Projeção de Parcelas</h3>
+        <h3 className="text-lg font-semibold">Projeção Completa</h3>
       </div>
+
+      {activeContracts.length > 0 && (
+        <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
+          <p className="text-xs text-muted-foreground mb-2">Contratos Fixos Mensais</p>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex items-center gap-1">
+              <TrendingUp className="h-3 w-3 text-success" />
+              <span className="font-semibold text-success">+R$ {recurringIncome.toFixed(2)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrendingDown className="h-3 w-3 text-danger" />
+              <span className="font-semibold text-danger">-R$ {recurringExpenses.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         {projections.map((projection, index) => {
-          const isPositive = projection.balance >= 0;
-          const hasInstallments = projection.installments.length > 0;
+          const totalIncome = projection.income + recurringIncome;
+          const totalExpenses = projection.expenses + recurringExpenses;
+          const totalBalance = totalIncome - totalExpenses;
+          const isPositive = totalBalance >= 0;
+          const hasItems = projection.installments.length > 0 || activeContracts.length > 0;
 
           return (
             <div
@@ -49,32 +74,51 @@ export function FutureProjection({ projections }: FutureProjectionProps) {
                     </Badge>
                   )}
                 </div>
-                <Badge variant={hasInstallments ? "secondary" : "outline"} className="text-xs">
-                  {projection.installments.length} parcela(s)
-                </Badge>
+                <div className="flex items-center gap-2">
+                  {activeContracts.length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {activeContracts.length} contrato(s)
+                    </Badge>
+                  )}
+                  {projection.installments.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {projection.installments.length} parcela(s)
+                    </Badge>
+                  )}
+                </div>
               </div>
 
-              {hasInstallments ? (
+              {hasItems ? (
                 <>
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-success/10">
-                      <TrendingUp className="h-4 w-4 text-success" />
-                      <div>
+                    <div className="p-3 rounded-lg bg-success/10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className="h-4 w-4 text-success" />
                         <p className="text-xs text-muted-foreground">Receitas</p>
-                        <p className="font-semibold text-success">
-                          R$ {projection.income.toFixed(2)}
-                        </p>
                       </div>
+                      <p className="font-semibold text-success">
+                        R$ {totalIncome.toFixed(2)}
+                      </p>
+                      {recurringIncome > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Fixo: R$ {recurringIncome.toFixed(2)}
+                        </p>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-danger/10">
-                      <TrendingDown className="h-4 w-4 text-danger" />
-                      <div>
+                    <div className="p-3 rounded-lg bg-danger/10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingDown className="h-4 w-4 text-danger" />
                         <p className="text-xs text-muted-foreground">Despesas</p>
-                        <p className="font-semibold text-danger">
-                          R$ {projection.expenses.toFixed(2)}
-                        </p>
                       </div>
+                      <p className="font-semibold text-danger">
+                        R$ {totalExpenses.toFixed(2)}
+                      </p>
+                      {recurringExpenses > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Fixo: R$ {recurringExpenses.toFixed(2)}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -87,14 +131,14 @@ export function FutureProjection({ projections }: FutureProjectionProps) {
                           isPositive ? "text-success" : "text-danger"
                         )}
                       >
-                        {isPositive ? "+" : ""}R$ {projection.balance.toFixed(2)}
+                        {isPositive ? "+" : ""}R$ {totalBalance.toFixed(2)}
                       </span>
                     </div>
                   </div>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground text-center py-2">
-                  Nenhuma parcela prevista
+                  Nenhuma movimentação prevista
                 </p>
               )}
             </div>

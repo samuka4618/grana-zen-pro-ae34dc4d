@@ -1,0 +1,147 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarClock } from "lucide-react";
+import { toast } from "sonner";
+import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+
+interface AddRecurringContractProps {
+  onAdd: (
+    description: string,
+    amount: number,
+    dueDay: number,
+    category: string,
+    type: "expense" | "income"
+  ) => void;
+}
+
+export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
+  const { getCategoriesByType } = useCategoriesStore();
+  const [type, setType] = useState<"income" | "expense">("expense");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [dueDay, setDueDay] = useState("");
+  const [category, setCategory] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!description || !amount || !dueDay || !category) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+
+    const numAmount = parseFloat(amount);
+    const day = parseInt(dueDay);
+
+    if (isNaN(numAmount) || numAmount <= 0) {
+      toast.error("Valor inválido");
+      return;
+    }
+
+    if (isNaN(day) || day < 1 || day > 31) {
+      toast.error("Dia do vencimento inválido (1-31)");
+      return;
+    }
+
+    onAdd(description, numAmount, day, category, type);
+    toast.success(`Contrato fixo adicionado!`);
+
+    // Reset form
+    setDescription("");
+    setAmount("");
+    setDueDay("");
+    setCategory("");
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarClock className="h-5 w-5 text-primary" />
+        <h2 className="text-xl font-semibold">Adicionar Contrato Fixo</h2>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant={type === "expense" ? "default" : "outline"}
+            onClick={() => setType("expense")}
+            className="flex-1"
+          >
+            Despesa
+          </Button>
+          <Button
+            type="button"
+            variant={type === "income" ? "default" : "outline"}
+            onClick={() => setType("income")}
+            className="flex-1"
+          >
+            Receita
+          </Button>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="description">Descrição</Label>
+          <Input
+            id="description"
+            placeholder="Ex: Internet VIVO, Aluguel..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="amount">Valor Mensal</Label>
+            <Input
+              id="amount"
+              type="number"
+              step="0.01"
+              placeholder="150,00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dueDay">Dia Vencimento</Label>
+            <Input
+              id="dueDay"
+              type="number"
+              min="1"
+              max="31"
+              placeholder="10"
+              value={dueDay}
+              onChange={(e) => setDueDay(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="category">Categoria</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione uma categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              {getCategoriesByType(type).map((cat) => (
+                <SelectItem key={cat.id} value={cat.name}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button type="submit" className="w-full gap-2">
+          <CalendarClock className="h-4 w-4" />
+          Adicionar Contrato Fixo
+        </Button>
+      </form>
+    </Card>
+  );
+}
