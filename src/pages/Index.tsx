@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3, CreditCard as CreditCardIcon, Building2 } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3, CreditCard as CreditCardIcon, Building2, LogOut, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
@@ -119,10 +119,19 @@ const Index = () => {
                 <BarChart3 className="h-4 w-4" />
                 Análise
               </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/shared-access")}
+                className="gap-2"
+              >
+                <Users className="h-4 w-4" />
+                Família
+              </Button>
               <NotificationsCenter />
               <CategoryManager />
               <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
-                Sair
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>

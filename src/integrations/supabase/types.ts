@@ -316,6 +316,30 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_access: {
+        Row: {
+          created_at: string
+          id: string
+          permission: Database["public"]["Enums"]["share_permission"]
+          shared_by: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission?: Database["public"]["Enums"]["share_permission"]
+          shared_by: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission?: Database["public"]["Enums"]["share_permission"]
+          shared_by?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -368,10 +392,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_permission: {
+        Args: {
+          _owner_id: string
+          _required_permission: Database["public"]["Enums"]["share_permission"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_shared_access: {
+        Args: { _owner_id: string; _viewer_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      share_permission: "owner" | "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -498,6 +533,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      share_permission: ["owner", "admin", "editor", "viewer"],
+    },
   },
 } as const
