@@ -94,7 +94,8 @@ export function useTransactionsStore(selectedMonth?: Date) {
     category: string,
     type: "income" | "expense",
     dateOrAttachmentUrl?: string | Date,
-    attachmentUrl?: string
+    attachmentUrl?: string,
+    bankAccountId?: string
   ) => {
     if (!user) return;
 
@@ -131,6 +132,7 @@ export function useTransactionsStore(selectedMonth?: Date) {
           user_id: user.id,
           date: date.toISOString(),
           attachment_url: attachment || null,
+          bank_account_id: bankAccountId || null,
         }])
         .select()
         .single();
