@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
+import { ImportData } from "@/components/ImportData";
 import { CategoryManager } from "@/components/CategoryManager";
 import { MonthPicker } from "@/components/MonthPicker";
 import { ExpensesByCategory } from "@/components/ExpensesByCategory";
@@ -174,6 +175,8 @@ const Index = () => {
             />
             
             <TopTransactions transactions={transactions} />
+            
+            <ImportData />
             
             <TransactionList 
               transactions={transactions} 
