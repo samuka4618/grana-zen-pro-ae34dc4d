@@ -93,9 +93,32 @@ export function useTransactionsStore(selectedMonth?: Date) {
     amount: number,
     category: string,
     type: "income" | "expense",
+    dateOrAttachmentUrl?: string | Date,
     attachmentUrl?: string
   ) => {
     if (!user) return;
+
+    // Handle overloaded parameters
+    let date: Date;
+    let attachment: string | undefined;
+
+    if (typeof dateOrAttachmentUrl === 'string' && dateOrAttachmentUrl.startsWith('http')) {
+      // Old API: attachmentUrl as 5th parameter
+      date = new Date();
+      attachment = dateOrAttachmentUrl;
+    } else if (dateOrAttachmentUrl instanceof Date) {
+      // New API: date as 5th parameter
+      date = dateOrAttachmentUrl;
+      attachment = attachmentUrl;
+    } else if (typeof dateOrAttachmentUrl === 'string') {
+      // Date string
+      date = new Date(dateOrAttachmentUrl);
+      attachment = attachmentUrl;
+    } else {
+      // No date provided
+      date = new Date();
+      attachment = attachmentUrl;
+    }
 
     try {
       const { data, error } = await supabase
@@ -106,8 +129,8 @@ export function useTransactionsStore(selectedMonth?: Date) {
           category,
           type,
           user_id: user.id,
-          date: new Date().toISOString(),
-          attachment_url: attachmentUrl || null,
+          date: date.toISOString(),
+          attachment_url: attachment || null,
         }])
         .select()
         .single();
