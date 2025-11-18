@@ -9,6 +9,7 @@ import { ImportData } from "@/components/ImportData";
 import { CategoryManager } from "@/components/CategoryManager";
 import { NotificationsCenter } from "@/components/NotificationsCenter";
 import { useNotificationChecker } from "@/hooks/useNotificationChecker";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { MonthPicker } from "@/components/MonthPicker";
 import { ExpensesByCategory } from "@/components/ExpensesByCategory";
 import { IncomeVsExpenses } from "@/components/IncomeVsExpenses";
@@ -236,6 +237,7 @@ const Index = () => {
           </div>
         </div>
       </div>
+      <InstallPrompt />
     </div>
   );
 };
