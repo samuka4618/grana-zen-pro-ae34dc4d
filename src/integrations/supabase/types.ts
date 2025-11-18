@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_goals: {
+        Row: {
+          category: string
+          created_at: string
+          current_month: string
+          goal_type: string
+          id: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          current_month: string
+          goal_type: string
+          id?: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_month?: string
+          goal_type?: string
+          id?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       installments: {
         Row: {
           category: string
