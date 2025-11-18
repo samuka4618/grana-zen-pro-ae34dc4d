@@ -5,6 +5,10 @@ import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
 import { CategoryManager } from "@/components/CategoryManager";
 import { MonthPicker } from "@/components/MonthPicker";
+import { ExpensesByCategory } from "@/components/ExpensesByCategory";
+import { IncomeVsExpenses } from "@/components/IncomeVsExpenses";
+import { TopTransactions } from "@/components/TopTransactions";
+import { FinancialInsights } from "@/components/FinancialInsights";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -75,10 +79,22 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+          {/* Left Column - Charts and Lists */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <ExpensesByCategory transactions={transactions} />
+              <FinancialInsights transactions={transactions} />
+            </div>
+            
+            <IncomeVsExpenses transactions={transactions} selectedMonth={selectedDate} />
+            
+            <TopTransactions transactions={transactions} />
+            
             <TransactionList transactions={transactions} />
           </div>
-          <div>
+
+          {/* Right Column - Quick Actions */}
+          <div className="space-y-6">
             <QuickAddTransaction onAdd={addTransaction} />
           </div>
         </div>
