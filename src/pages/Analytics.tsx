@@ -6,6 +6,7 @@ import { CategoryTrends } from "@/components/CategoryTrends";
 import { PredictiveAnalysis } from "@/components/PredictiveAnalysis";
 import { AIInsights } from "@/components/AIInsights";
 import { FinancialGoalsManager } from "@/components/FinancialGoalsManager";
+import { ExportReports } from "@/components/ExportReports";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
@@ -69,7 +70,7 @@ const Analytics = () => {
         {/* Analytics Grid */}
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Left Column - Charts */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div id="analytics-charts" className="lg:col-span-2 space-y-4 sm:space-y-6">
             <TrendAnalysis allTransactions={allTransactions} />
             <CategoryTrends allTransactions={allTransactions} />
             <AIInsights
@@ -83,6 +84,7 @@ const Analytics = () => {
 
           {/* Right Column - Predictions & Goals */}
           <div className="space-y-4 sm:space-y-6">
+            <ExportReports chartsElementId="analytics-charts" />
             <PredictiveAnalysis
               allTransactions={allTransactions}
               recurringExpenses={recurringExpenses}
