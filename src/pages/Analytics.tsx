@@ -8,6 +8,8 @@ import { AIInsights } from "@/components/AIInsights";
 import { FinancialGoalsManager } from "@/components/FinancialGoalsManager";
 import { ExportReports } from "@/components/ExportReports";
 import { NotificationsCenter } from "@/components/NotificationsCenter";
+import { BudgetManager } from "@/components/BudgetManager";
+import { BudgetComparison } from "@/components/BudgetComparison";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
@@ -87,6 +89,8 @@ const Analytics = () => {
           {/* Right Column - Predictions & Goals */}
           <div className="space-y-4 sm:space-y-6">
             <ExportReports chartsElementId="analytics-charts" />
+            <BudgetManager selectedDate={selectedDate} />
+            <BudgetComparison selectedDate={selectedDate} />
             <PredictiveAnalysis
               allTransactions={allTransactions}
               recurringExpenses={recurringExpenses}
