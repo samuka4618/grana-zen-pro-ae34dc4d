@@ -3,6 +3,7 @@ import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
 import { CategoryManager } from "@/components/CategoryManager";
+import { MonthlyCalendar } from "@/components/MonthlyCalendar";
 
 const Index = () => {
   return (
@@ -55,7 +56,8 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
+            <MonthlyCalendar />
             <TransactionList />
           </div>
           <div>
