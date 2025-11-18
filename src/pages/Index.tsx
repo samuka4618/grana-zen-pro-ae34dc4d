@@ -2,19 +2,23 @@ import { Wallet, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
+import { CategoryManager } from "@/components/CategoryManager";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-8">
         {/* Header */}
-        <header className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            Controle Financeiro
-          </h1>
-          <p className="text-muted-foreground">
-            Gerencie suas finanças de forma simples e poderosa
-          </p>
+        <header className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Controle Financeiro
+            </h1>
+            <p className="text-muted-foreground">
+              Gerencie suas finanças de forma simples e poderosa
+            </p>
+          </div>
+          <CategoryManager />
         </header>
 
         {/* Stats Grid */}

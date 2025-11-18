@@ -6,13 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-
-const categories = {
-  income: ["Salário", "Freelance", "Investimentos", "Renda Extra"],
-  expense: ["Alimentação", "Transporte", "Moradia", "Saúde", "Entretenimento", "Educação", "Compras"]
-};
+import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 
 export function QuickAddTransaction() {
+  const { getCategoriesByType } = useCategoriesStore();
   const [type, setType] = useState<"income" | "expense">("expense");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -87,9 +84,9 @@ export function QuickAddTransaction() {
               <SelectValue placeholder="Selecione uma categoria" />
             </SelectTrigger>
             <SelectContent>
-              {categories[type].map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
+              {getCategoriesByType(type).map((cat) => (
+                <SelectItem key={cat.id} value={cat.name}>
+                  {cat.name}
                 </SelectItem>
               ))}
             </SelectContent>
