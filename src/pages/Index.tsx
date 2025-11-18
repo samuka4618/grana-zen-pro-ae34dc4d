@@ -159,28 +159,28 @@ const Index = () => {
         <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Saldo"
-            value={`R$ ${adjustedStats.balance.toFixed(2)}`}
+            value={adjustedStats.balance}
             icon={Wallet}
             trend={monthYear}
             variant={adjustedStats.balance >= 0 ? "default" : "danger"}
           />
           <StatCard
             title="Receitas"
-            value={`R$ ${adjustedStats.income.toFixed(2)}`}
+            value={adjustedStats.income}
             icon={TrendingUp}
             trend={monthYear}
             variant="success"
           />
           <StatCard
             title="Despesas"
-            value={`R$ ${adjustedStats.expenses.toFixed(2)}`}
+            value={adjustedStats.expenses}
             icon={TrendingDown}
             trend={monthYear}
             variant="danger"
           />
           <StatCard
             title="Economia"
-            value={`R$ ${adjustedStats.savings.toFixed(2)}`}
+            value={adjustedStats.savings}
             icon={DollarSign}
             trend={`${adjustedStats.savingsRate} do total`}
             variant="success"

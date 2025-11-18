@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EditCategoryDialog } from "./EditCategoryDialog";
 import { AttachmentViewer } from "./AttachmentViewer";
+import { formatCurrency } from "@/lib/currency";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -64,11 +65,11 @@ export function TransactionList({ transactions, onUpdateCategory }: TransactionL
               </div>
               
               <p className={cn(
-                "text-lg font-semibold",
+                "text-lg font-semibold tabular-nums",
                 transaction.type === "income" ? "text-success" : "text-danger"
               )}>
                 {transaction.type === "income" ? "+" : "-"}
-                R$ {transaction.amount.toFixed(2)}
+                {formatCurrency(transaction.amount).replace('R$', '').trim()}
               </p>
             </div>
           ))

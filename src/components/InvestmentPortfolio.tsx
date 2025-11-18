@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvestmentsStore } from "@/hooks/useInvestmentsStore";
 import { TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 export const InvestmentPortfolio = () => {
   const { user } = useAuth();
@@ -38,8 +39,8 @@ export const InvestmentPortfolio = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Investido</p>
-              <p className="text-2xl font-bold">
-                R$ {totalInvested.toFixed(2)}
+              <p className="text-2xl font-bold tabular-nums">
+                {formatCurrency(totalInvested)}
               </p>
             </div>
             <DollarSign className="h-8 w-8 text-muted-foreground" />
@@ -50,8 +51,8 @@ export const InvestmentPortfolio = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Valor Atual</p>
-              <p className="text-2xl font-bold">
-                R$ {currentValue.toFixed(2)}
+              <p className="text-2xl font-bold tabular-nums">
+                {formatCurrency(currentValue)}
               </p>
             </div>
             <DollarSign className="h-8 w-8 text-muted-foreground" />
@@ -63,11 +64,11 @@ export const InvestmentPortfolio = () => {
             <div>
               <p className="text-sm text-muted-foreground">Lucro/Prejuízo</p>
               <p
-                className={`text-2xl font-bold ${
+                className={`text-2xl font-bold tabular-nums ${
                   profitLoss >= 0 ? "text-green-500" : "text-red-500"
                 }`}
               >
-                R$ {profitLoss.toFixed(2)}
+                {formatCurrency(profitLoss)}
               </p>
             </div>
             {profitLoss >= 0 ? (
@@ -139,14 +140,14 @@ export const InvestmentPortfolio = () => {
                           </div>
                         </td>
                         <td className="py-3 px-4">{inv.type}</td>
-                        <td className="text-right py-3 px-4">
+                        <td className="text-right py-3 px-4 tabular-nums">
                           {inv.quantity}
                         </td>
-                        <td className="text-right py-3 px-4">
-                          R$ {inv.purchase_price.toFixed(2)}
+                        <td className="text-right py-3 px-4 tabular-nums">
+                          {formatCurrency(inv.purchase_price)}
                         </td>
-                        <td className="text-right py-3 px-4">
-                          R$ {inv.current_price.toFixed(2)}
+                        <td className="text-right py-3 px-4 tabular-nums">
+                          {formatCurrency(inv.current_price)}
                         </td>
                         <td
                           className={`text-right py-3 px-4 font-medium ${

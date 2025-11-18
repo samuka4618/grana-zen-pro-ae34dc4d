@@ -7,6 +7,7 @@ import { useBudgetsStore } from '@/hooks/useBudgetsStore';
 import { useTransactionsStore } from '@/hooks/useTransactionsStore';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatCurrency } from '@/lib/currency';
 
 interface BudgetComparisonProps {
   selectedDate: Date;
@@ -116,11 +117,11 @@ export const BudgetComparison = ({ selectedDate }: BudgetComparisonProps) => {
               </div>
               <Progress value={Math.min(totalPercentage, 100)} className="h-2" />
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Planejado: R$ {totalPlanned.toFixed(2)}
+                <span className="text-muted-foreground tabular-nums">
+                  Planejado: {formatCurrency(totalPlanned)}
                 </span>
-                <span className={totalSpent > totalPlanned ? 'text-red-500 font-semibold' : ''}>
-                  Gasto: R$ {totalSpent.toFixed(2)}
+                <span className={`tabular-nums ${totalSpent > totalPlanned ? 'text-red-500 font-semibold' : ''}`}>
+                  Gasto: {formatCurrency(totalSpent)}
                 </span>
               </div>
             </div>
@@ -142,18 +143,17 @@ export const BudgetComparison = ({ selectedDate }: BudgetComparisonProps) => {
                         {item.percentage.toFixed(0)}%
                       </Badge>
                       {item.status === 'over' && (
-                        <span className="text-xs text-red-500 font-semibold">
-                          +R$ {(item.spent - item.planned).toFixed(2)}
+                        <span className="text-xs text-red-500 font-semibold tabular-nums">
+                          +{formatCurrency(item.spent - item.planned).replace('R$', '').trim()}
                         </span>
                       )}
                     </div>
                   </div>
                   <Progress value={item.percentage} className={`h-2 ${getStatusColor(item.status)}`} />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>R$ {item.spent.toFixed(2)} de R$ {item.planned.toFixed(2)}</span>
-                    <span className={item.remaining < 0 ? 'text-red-500' : 'text-green-600'}>
-                      {item.remaining >= 0 ? 'Restam' : 'Excedeu'} R${' '}
-                      {Math.abs(item.remaining).toFixed(2)}
+                    <span className="tabular-nums">{formatCurrency(item.spent)} de {formatCurrency(item.planned)}</span>
+                    <span className={`tabular-nums ${item.remaining < 0 ? 'text-red-500' : 'text-green-600'}`}>
+                      {item.remaining >= 0 ? 'Restam' : 'Excedeu'} {formatCurrency(Math.abs(item.remaining)).replace('R$', '').trim()}
                     </span>
                   </div>
                 </div>
