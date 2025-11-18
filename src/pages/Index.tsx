@@ -92,55 +92,55 @@ const Index = () => {
                 Gerencie suas finanças de forma simples e poderosa
               </p>
             </div>
-            <div className="flex items-center gap-2 self-start sm:self-auto">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors">
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/bank-accounts")}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <Building2 className="h-4 w-4" />
-                Contas
+                <span className="hidden sm:inline">Contas</span>
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/credit-cards")}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <CreditCardIcon className="h-4 w-4" />
-                Cartões
+                <span className="hidden sm:inline">Cartões</span>
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/analytics")}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <BarChart3 className="h-4 w-4" />
-                Análise
+                <span className="hidden sm:inline">Análise</span>
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/shared-access")}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <Users className="h-4 w-4" />
-                Família
+                <span className="hidden sm:inline">Família</span>
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/investments")}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <TrendingUp className="h-4 w-4" />
-                Investimentos
+                <span className="hidden sm:inline">Investimentos</span>
               </Button>
               <NotificationsCenter />
               <CategoryManager />
-              <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
+              <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()} className="flex-shrink-0">
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
