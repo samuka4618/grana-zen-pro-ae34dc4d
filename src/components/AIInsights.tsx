@@ -5,15 +5,19 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { Transaction } from "@/hooks/useTransactionsStore";
 import { RecurringContract } from "@/hooks/useRecurringContractsStore";
 import { Installment } from "@/hooks/useInstallmentsStore";
+import { CreditCard } from "@/hooks/useCreditCardsStore";
+import { CreditCardPurchase } from "@/hooks/useCreditCardPurchasesStore";
 import { toast } from "sonner";
 
 interface AIInsightsProps {
   transactions: Transaction[];
   contracts: RecurringContract[];
   installments: Installment[];
+  creditCards: CreditCard[];
+  creditCardPurchases: CreditCardPurchase[];
 }
 
-export function AIInsights({ transactions, contracts, installments }: AIInsightsProps) {
+export function AIInsights({ transactions, contracts, installments, creditCards, creditCardPurchases }: AIInsightsProps) {
   const [insights, setInsights] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +36,8 @@ export function AIInsights({ transactions, contracts, installments }: AIInsights
             transactions: transactions.slice(0, 50),
             recurringContracts: contracts,
             installments: installments,
+            creditCards: creditCards,
+            creditCardPurchases: creditCardPurchases,
           }),
         }
       );

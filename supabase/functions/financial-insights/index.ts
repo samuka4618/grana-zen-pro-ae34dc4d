@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { transactions, recurringContracts, installments } = await req.json();
+    const { transactions, recurringContracts, installments, creditCards, creditCardPurchases } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -23,10 +23,12 @@ serve(async (req) => {
 
 Foque em:
 1. Padrões de gastos incomuns ou preocupantes
-2. Oportunidades de economia
+2. Oportunidades de economia com cartões de crédito (uso de limite, parcelamentos, faturas futuras)
 3. Tendências positivas ou negativas
 4. Sugestões práticas e acionáveis
 5. Alertas sobre categorias com gastos crescentes
+6. Análise de uso de cartões de crédito e impacto nas finanças
+7. Recomendações sobre gestão de parcelamentos e faturas
 
 Seja direto, prático e útil. Forneça no máximo 5 insights mais relevantes.`;
 
@@ -35,8 +37,10 @@ Seja direto, prático e útil. Forneça no máximo 5 insights mais relevantes.`;
 Transações: ${JSON.stringify(transactions)}
 Contratos Recorrentes: ${JSON.stringify(recurringContracts)}
 Parcelas: ${JSON.stringify(installments)}
+Cartões de Crédito: ${JSON.stringify(creditCards)}
+Compras no Cartão: ${JSON.stringify(creditCardPurchases)}
 
-Gere insights inteligentes e sugestões de melhoria.`;
+Gere insights inteligentes e sugestões de melhoria, considerando especialmente o uso dos cartões de crédito, limites disponíveis, parcelamentos e faturas futuras.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
