@@ -1,60 +1,148 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
+import { toast } from "sonner";
 
 export interface RecurringContract {
   id: string;
   description: string;
   amount: number;
-  dueDay: number; // Dia do mês (1-31)
+  dueDay: number;
   category: string;
   type: "expense" | "income";
   active: boolean;
   startDate: Date;
 }
 
-const STORAGE_KEY = "financial-recurring-contracts";
-
 export function useRecurringContractsStore() {
-  const [contracts, setContracts] = useState<RecurringContract[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((c: any) => ({ ...c, startDate: new Date(c.startDate) }));
-    }
-    return [];
-  });
+  const { user } = useAuth();
+  const [contracts, setContracts] = useState<RecurringContract[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(contracts));
-  }, [contracts]);
+    if (user) {
+      fetchContracts();
+    }
+  }, [user]);
 
-  const addContract = (
+  const fetchContracts = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("recurring_contracts")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      if (data) {
+        setContracts(data.map(c => ({ 
+          id: c.id,
+          description: c.description,
+          amount: Number(c.amount),
+          dueDay: c.due_day,
+          category: c.category,
+          type: c.type as "expense" | "income",
+          active: c.active,
+          startDate: new Date(c.start_date),
+        })));
+      }
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      toast.error("Erro ao carregar contratos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addContract = async (
     description: string,
     amount: number,
     dueDay: number,
     category: string,
     type: "expense" | "income"
   ) => {
-    const newContract: RecurringContract = {
-      id: Date.now().toString(),
-      description,
-      amount,
-      dueDay,
-      category,
-      type,
-      active: true,
-      startDate: new Date(),
-    };
-    setContracts((prev) => [...prev, newContract]);
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("recurring_contracts")
+        .insert([{
+          description,
+          amount,
+          due_day: dueDay,
+          category,
+          type,
+          user_id: user.id,
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setContracts((prev) => [...prev, {
+          id: data.id,
+          description: data.description,
+          amount: Number(data.amount),
+          dueDay: data.due_day,
+          category: data.category,
+          type: data.type as "expense" | "income",
+          active: data.active,
+          startDate: new Date(data.start_date),
+        }]);
+        toast.success("Contrato adicionado");
+      }
+    } catch (error) {
+      console.error("Error adding contract:", error);
+      toast.error("Erro ao adicionar contrato");
+    }
   };
 
-  const toggleContract = (id: string) => {
-    setContracts((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, active: !c.active } : c))
-    );
+  const toggleContract = async (id: string) => {
+    if (!user) return;
+
+    const contract = contracts.find(c => c.id === id);
+    if (!contract) return;
+
+    try {
+      const { error } = await supabase
+        .from("recurring_contracts")
+        .update({ active: !contract.active })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      
+      setContracts((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, active: !c.active } : c))
+      );
+      toast.success(contract.active ? "Contrato desativado" : "Contrato ativado");
+    } catch (error) {
+      console.error("Error toggling contract:", error);
+      toast.error("Erro ao atualizar contrato");
+    }
   };
 
-  const deleteContract = (id: string) => {
-    setContracts((prev) => prev.filter((c) => c.id !== id));
+  const deleteContract = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("recurring_contracts")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      
+      setContracts((prev) => prev.filter((c) => c.id !== id));
+      toast.success("Contrato removido");
+    } catch (error) {
+      console.error("Error deleting contract:", error);
+      toast.error("Erro ao remover contrato");
+    }
   };
 
   const getActiveContracts = () => {
@@ -74,5 +162,6 @@ export function useRecurringContractsStore() {
     deleteContract,
     getActiveContracts,
     getMonthlyTotal,
+    loading,
   };
 }

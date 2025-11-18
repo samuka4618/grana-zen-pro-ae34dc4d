@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
+import { toast } from "sonner";
 
 export interface Transaction {
   id: string;
@@ -10,43 +13,46 @@ export interface Transaction {
   date: Date;
 }
 
-const STORAGE_KEY = "financial-transactions";
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: "1", description: "Salário", amount: 5000, category: "Salário", type: "income", date: new Date(2025, 0, 5) },
-  { id: "2", description: "Freelance", amount: 1500, category: "Freelance", type: "income", date: new Date(2025, 0, 15) },
-  { id: "3", description: "Investimentos", amount: 2000, category: "Investimentos", type: "income", date: new Date(2025, 0, 20) },
-  { id: "4", description: "Mercado", amount: 450, category: "Alimentação", type: "expense", date: new Date(2025, 0, 8) },
-  { id: "5", description: "Uber", amount: 120, category: "Transporte", type: "expense", date: new Date(2025, 0, 10) },
-  { id: "6", description: "Aluguel", amount: 1200, category: "Moradia", type: "expense", date: new Date(2025, 0, 1) },
-  { id: "7", description: "Farmácia", amount: 80, category: "Saúde", type: "expense", date: new Date(2025, 0, 12) },
-  { id: "8", description: "Netflix", amount: 55, category: "Entretenimento", type: "expense", date: new Date(2025, 0, 15) },
-  { id: "9", description: "Curso online", amount: 200, category: "Educação", type: "expense", date: new Date(2025, 0, 18) },
-  { id: "10", description: "Roupas", amount: 350, category: "Compras", type: "expense", date: new Date(2025, 0, 22) },
-  { id: "11", description: "Restaurante", amount: 180, category: "Alimentação", type: "expense", date: new Date(2025, 0, 25) },
-  { id: "12", description: "Gasolina", amount: 250, category: "Transporte", type: "expense", date: new Date(2025, 0, 28) },
-  // Dezembro 2024
-  { id: "13", description: "Salário", amount: 5000, category: "Salário", type: "income", date: new Date(2024, 11, 5) },
-  { id: "14", description: "Mercado", amount: 400, category: "Alimentação", type: "expense", date: new Date(2024, 11, 10) },
-  { id: "15", description: "Aluguel", amount: 1200, category: "Moradia", type: "expense", date: new Date(2024, 11, 1) },
-];
-
 export function useTransactionsStore(selectedMonth?: Date) {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((t: any) => ({ ...t, date: new Date(t.date) }));
-    }
-    return MOCK_TRANSACTIONS;
-  });
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(transactions)
-    );
-  }, [transactions]);
+    if (user) {
+      fetchTransactions();
+    }
+  }, [user]);
+
+  const fetchTransactions = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        setTransactions(data.map(t => ({ 
+          id: t.id,
+          description: t.description,
+          amount: Number(t.amount),
+          category: t.category,
+          type: t.type as "income" | "expense",
+          date: new Date(t.date),
+        })));
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      toast.error("Erro ao carregar transações");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredTransactions = useMemo(() => {
     if (!selectedMonth) return transactions;
@@ -80,21 +86,45 @@ export function useTransactionsStore(selectedMonth?: Date) {
     };
   }, [filteredTransactions]);
 
-  const addTransaction = (
+  const addTransaction = async (
     description: string,
     amount: number,
     category: string,
     type: "income" | "expense"
   ) => {
-    const newTransaction: Transaction = {
-      id: Date.now().toString(),
-      description,
-      amount,
-      category,
-      type,
-      date: new Date(),
-    };
-    setTransactions((prev) => [newTransaction, ...prev]);
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("transactions")
+        .insert([{
+          description,
+          amount,
+          category,
+          type,
+          user_id: user.id,
+          date: new Date().toISOString(),
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setTransactions((prev) => [{
+          id: data.id,
+          description: data.description,
+          amount: Number(data.amount),
+          category: data.category,
+          type: data.type as "income" | "expense",
+          date: new Date(data.date),
+        }, ...prev]);
+        toast.success("Transação adicionada");
+      }
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+      toast.error("Erro ao adicionar transação");
+    }
   };
 
   return {
@@ -102,5 +132,6 @@ export function useTransactionsStore(selectedMonth?: Date) {
     allTransactions: transactions,
     stats,
     addTransaction,
+    loading,
   };
 }
