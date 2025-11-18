@@ -117,12 +117,14 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
                   {startDate ? format(startDate, "PPP", { locale: ptBR }) : "Selecione"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={startDate}
                   onSelect={(date) => date && setStartDate(date)}
                   locale={ptBR}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -143,12 +145,14 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
                   {endDate ? format(endDate, "PPP", { locale: ptBR }) : "Selecione"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={endDate}
                   onSelect={(date) => date && setEndDate(date)}
                   locale={ptBR}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
