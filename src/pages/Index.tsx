@@ -26,11 +26,12 @@ import { ptBR } from "date-fns/locale";
 const Index = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { transactions, stats, addTransaction } = useTransactionsStore(selectedDate);
+  const { transactions, stats, addTransaction, updateTransactionCategory } = useTransactionsStore(selectedDate);
   const {
     installments,
     addInstallment,
     deleteInstallment,
+    updateInstallmentCategory,
     getActiveInstallments,
     getProjection,
   } = useInstallmentsStore();
@@ -39,6 +40,7 @@ const Index = () => {
     addContract,
     toggleContract,
     deleteContract,
+    updateContractCategory,
     getActiveContracts,
     getMonthlyTotal,
   } = useRecurringContractsStore();
@@ -153,16 +155,21 @@ const Index = () => {
               contracts={contracts}
               onToggle={toggleContract}
               onDelete={deleteContract}
+              onUpdateCategory={updateContractCategory}
             />
             
             <InstallmentsList
               installments={getActiveInstallments()}
               onDelete={deleteInstallment}
+              onUpdateCategory={updateInstallmentCategory}
             />
             
             <TopTransactions transactions={transactions} />
             
-            <TransactionList transactions={transactions} />
+            <TransactionList 
+              transactions={transactions} 
+              onUpdateCategory={updateTransactionCategory}
+            />
           </div>
 
           {/* Right Column - Quick Actions */}

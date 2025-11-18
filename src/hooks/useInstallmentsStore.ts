@@ -129,6 +129,28 @@ export function useInstallmentsStore() {
     }
   };
 
+  const updateInstallmentCategory = async (id: string, category: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("installments")
+        .update({ category })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setInstallments((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, category } : i))
+      );
+      toast.success("Categoria atualizada");
+    } catch (error) {
+      console.error("Error updating installment:", error);
+      toast.error("Erro ao atualizar categoria");
+    }
+  };
+
   const getActiveInstallments = () => {
     return installments.filter(
       (i) => i.currentInstallment <= i.installmentCount
@@ -181,6 +203,7 @@ export function useInstallmentsStore() {
     installments,
     addInstallment,
     deleteInstallment,
+    updateInstallmentCategory,
     getActiveInstallments,
     getInstallmentsForMonth,
     getProjection,

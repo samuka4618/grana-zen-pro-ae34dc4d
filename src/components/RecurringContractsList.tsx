@@ -5,17 +5,20 @@ import { Switch } from "@/components/ui/switch";
 import { RecurringContract } from "@/hooks/useRecurringContractsStore";
 import { CalendarClock, Trash2, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EditCategoryDialog } from "./EditCategoryDialog";
 
 interface RecurringContractsListProps {
   contracts: RecurringContract[];
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onUpdateCategory?: (id: string, category: string) => void;
 }
 
 export function RecurringContractsList({
   contracts,
   onToggle,
   onDelete,
+  onUpdateCategory,
 }: RecurringContractsListProps) {
   const activeContracts = contracts.filter((c) => c.active);
   const totalExpenses = activeContracts
@@ -74,16 +77,25 @@ export function RecurringContractsList({
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="font-semibold">{contract.description}</p>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      contract.type === "income"
-                        ? "bg-success/10 text-success border-success/20"
-                        : "bg-danger/10 text-danger border-danger/20"
+                  <div className="flex items-center gap-1">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        contract.type === "income"
+                          ? "bg-success/10 text-success border-success/20"
+                          : "bg-danger/10 text-danger border-danger/20"
+                      )}
+                    >
+                      {contract.category}
+                    </Badge>
+                    {onUpdateCategory && (
+                      <EditCategoryDialog
+                        currentCategory={contract.category}
+                        type={contract.type}
+                        onUpdate={(newCategory) => onUpdateCategory(contract.id, newCategory)}
+                      />
                     )}
-                  >
-                    {contract.category}
-                  </Badge>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-3 w-3" />

@@ -145,6 +145,28 @@ export function useRecurringContractsStore() {
     }
   };
 
+  const updateContractCategory = async (id: string, category: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("recurring_contracts")
+        .update({ category })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setContracts((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, category } : c))
+      );
+      toast.success("Categoria atualizada");
+    } catch (error) {
+      console.error("Error updating contract:", error);
+      toast.error("Erro ao atualizar categoria");
+    }
+  };
+
   const getActiveContracts = () => {
     return contracts.filter((c) => c.active);
   };
@@ -160,6 +182,7 @@ export function useRecurringContractsStore() {
     addContract,
     toggleContract,
     deleteContract,
+    updateContractCategory,
     getActiveContracts,
     getMonthlyTotal,
     loading,

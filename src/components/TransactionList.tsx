@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 import { Transaction } from "@/hooks/useTransactionsStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { EditCategoryDialog } from "./EditCategoryDialog";
 
 interface TransactionListProps {
   transactions: Transaction[];
+  onUpdateCategory?: (id: string, category: string) => void;
 }
 
-export function TransactionList({ transactions }: TransactionListProps) {
+export function TransactionList({ transactions, onUpdateCategory }: TransactionListProps) {
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -38,9 +40,18 @@ export function TransactionList({ transactions }: TransactionListProps) {
                 <div>
                   <p className="font-medium">{transaction.description}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {transaction.category}
-                    </Badge>
+                    <div className="flex items-center gap-1">
+                      <Badge variant="secondary" className="text-xs">
+                        {transaction.category}
+                      </Badge>
+                      {onUpdateCategory && (
+                        <EditCategoryDialog
+                          currentCategory={transaction.category}
+                          type={transaction.type}
+                          onUpdate={(newCategory) => onUpdateCategory(transaction.id, newCategory)}
+                        />
+                      )}
+                    </div>
                     <span className="text-xs text-muted-foreground">
                       {format(transaction.date, "dd/MM/yyyy", { locale: ptBR })}
                     </span>
