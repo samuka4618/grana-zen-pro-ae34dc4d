@@ -17,6 +17,7 @@ import { InstallmentsList } from "@/components/InstallmentsList";
 import { FutureProjection } from "@/components/FutureProjection";
 import { AddRecurringContract } from "@/components/AddRecurringContract";
 import { RecurringContractsList } from "@/components/RecurringContractsList";
+import { ExportReports } from "@/components/ExportReports";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
@@ -153,7 +154,7 @@ const Index = () => {
         {/* Main Content */}
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Left Column - Charts and Lists */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div id="dashboard-charts" className="lg:col-span-2 space-y-4 sm:space-y-6">
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <ExpensesByCategory transactions={transactions} />
               <FinancialInsights transactions={transactions} />
@@ -186,6 +187,7 @@ const Index = () => {
 
           {/* Right Column - Quick Actions */}
           <div className="space-y-4 sm:space-y-6">
+            <ExportReports chartsElementId="dashboard-charts" />
             <QuickAddTransaction onAdd={addTransaction} />
             <AddRecurringContract onAdd={addContract} />
             <AddInstallment onAdd={addInstallment} />
