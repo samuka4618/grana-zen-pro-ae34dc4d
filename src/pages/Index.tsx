@@ -128,6 +128,15 @@ const Index = () => {
                 <Users className="h-4 w-4" />
                 Família
               </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/investments")}
+                className="gap-2"
+              >
+                <TrendingUp className="h-4 w-4" />
+                Investimentos
+              </Button>
               <NotificationsCenter />
               <CategoryManager />
               <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
