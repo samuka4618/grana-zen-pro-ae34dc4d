@@ -8,7 +8,11 @@ import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 
-export function QuickAddTransaction() {
+interface QuickAddTransactionProps {
+  onAdd: (description: string, amount: number, category: string, type: "income" | "expense") => void;
+}
+
+export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const { getCategoriesByType } = useCategoriesStore();
   const [type, setType] = useState<"income" | "expense">("expense");
   const [description, setDescription] = useState("");
@@ -23,6 +27,13 @@ export function QuickAddTransaction() {
       return;
     }
 
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      toast.error("Valor inválido");
+      return;
+    }
+
+    onAdd(description, numAmount, category, type);
     toast.success(`Transação de ${type === "income" ? "receita" : "despesa"} adicionada!`);
     
     // Reset form
