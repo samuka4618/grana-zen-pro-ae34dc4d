@@ -9,6 +9,8 @@ import { FinancialGoalsManager } from "@/components/FinancialGoalsManager";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
+import { useCreditCardsStore } from "@/hooks/useCreditCardsStore";
+import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, BarChart3 } from "lucide-react";
@@ -20,6 +22,8 @@ const Analytics = () => {
   const { transactions, allTransactions } = useTransactionsStore(selectedDate);
   const { contracts, getMonthlyTotal } = useRecurringContractsStore();
   const { installments, getActiveInstallments } = useInstallmentsStore();
+  const { cards } = useCreditCardsStore();
+  const { purchases } = useCreditCardPurchasesStore();
 
   const monthYear = format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
   const recurringExpenses = getMonthlyTotal("expense");
@@ -72,6 +76,8 @@ const Analytics = () => {
               transactions={allTransactions}
               contracts={contracts}
               installments={getActiveInstallments()}
+              creditCards={cards}
+              creditCardPurchases={purchases}
             />
           </div>
 
