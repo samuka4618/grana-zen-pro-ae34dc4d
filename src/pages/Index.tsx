@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3 } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3, CreditCard as CreditCardIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
@@ -86,11 +86,20 @@ const Index = () => {
               <Button
                 variant="default"
                 size="sm"
+                onClick={() => navigate("/credit-cards")}
+                className="gap-2"
+              >
+                <CreditCardIcon className="h-4 w-4" />
+                Cartões
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
                 onClick={() => navigate("/analytics")}
                 className="gap-2"
               >
                 <BarChart3 className="h-4 w-4" />
-                Análise Avançada
+                Análise
               </Button>
               <CategoryManager />
               <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>

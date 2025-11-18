@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Analytics from "./pages/Analytics";
+import CreditCards from "./pages/CreditCards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Analytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/credit-cards"
+              element={
+                <ProtectedRoute>
+                  <CreditCards />
                 </ProtectedRoute>
               }
             />

@@ -38,6 +38,92 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_card_purchases: {
+        Row: {
+          category: string
+          created_at: string
+          credit_card_id: string
+          description: string
+          id: string
+          installment_amount: number
+          installments: number
+          purchase_date: string
+          total_amount: number
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          credit_card_id: string
+          description: string
+          id?: string
+          installment_amount: number
+          installments: number
+          purchase_date?: string
+          total_amount: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          credit_card_id?: string
+          description?: string
+          id?: string
+          installment_amount?: number
+          installments?: number
+          purchase_date?: string
+          total_amount?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_card_purchases_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_cards: {
+        Row: {
+          active: boolean
+          closing_day: number
+          created_at: string
+          credit_limit: number
+          due_day: number
+          id: string
+          last_four_digits: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          closing_day: number
+          created_at?: string
+          credit_limit: number
+          due_day: number
+          id?: string
+          last_four_digits: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          closing_day?: number
+          created_at?: string
+          credit_limit?: number
+          due_day?: number
+          id?: string
+          last_four_digits?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_goals: {
         Row: {
           category: string
