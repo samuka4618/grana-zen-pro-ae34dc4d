@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      installments: {
+        Row: {
+          category: string
+          created_at: string | null
+          current_installment: number
+          description: string
+          id: string
+          installment_amount: number
+          installment_count: number
+          start_date: string
+          total_amount: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          current_installment?: number
+          description: string
+          id?: string
+          installment_amount: number
+          installment_count: number
+          start_date: string
+          total_amount: number
+          type: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          current_installment?: number
+          description?: string
+          id?: string
+          installment_amount?: number
+          installment_count?: number
+          start_date?: string
+          total_amount?: number
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recurring_contracts: {
+        Row: {
+          active: boolean
+          amount: number
+          category: string
+          created_at: string | null
+          description: string
+          due_day: number
+          id: string
+          start_date: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          amount: number
+          category: string
+          created_at?: string | null
+          description: string
+          due_day: number
+          id?: string
+          start_date?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          category?: string
+          created_at?: string | null
+          description?: string
+          due_day?: number
+          id?: string
+          start_date?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string | null
+          date?: string
+          description: string
+          id?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

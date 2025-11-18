@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Wallet, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
@@ -17,6 +18,7 @@ import { RecurringContractsList } from "@/components/RecurringContractsList";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
 import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
+import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -58,7 +60,12 @@ const Index = () => {
                 Gerencie suas finanças de forma simples e poderosa
               </p>
             </div>
-            <CategoryManager />
+            <div className="flex items-center gap-2">
+              <CategoryManager />
+              <Button variant="outline" onClick={() => supabase.auth.signOut()}>
+                Sair
+              </Button>
+            </div>
           </div>
           
           {/* Month Picker */}
