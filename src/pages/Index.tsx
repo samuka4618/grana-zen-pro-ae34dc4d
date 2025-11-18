@@ -5,9 +5,15 @@ import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
 import { CategoryManager } from "@/components/CategoryManager";
 import { MonthPicker } from "@/components/MonthPicker";
+import { useTransactionsStore } from "@/hooks/useTransactionsStore";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { transactions, stats, addTransaction } = useTransactionsStore(selectedDate);
+
+  const monthYear = format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,31 +44,31 @@ const Index = () => {
         {/* Stats Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            title="Saldo Total"
-            value="R$ 12.450,00"
+            title="Saldo"
+            value={`R$ ${stats.balance.toFixed(2)}`}
             icon={Wallet}
-            trend="+5,2% este mês"
-            variant="default"
+            trend={monthYear}
+            variant={stats.balance >= 0 ? "default" : "danger"}
           />
           <StatCard
             title="Receitas"
-            value="R$ 8.500,00"
+            value={`R$ ${stats.income.toFixed(2)}`}
             icon={TrendingUp}
-            trend="Janeiro 2025"
+            trend={monthYear}
             variant="success"
           />
           <StatCard
             title="Despesas"
-            value="R$ 3.250,00"
+            value={`R$ ${stats.expenses.toFixed(2)}`}
             icon={TrendingDown}
-            trend="Janeiro 2025"
+            trend={monthYear}
             variant="danger"
           />
           <StatCard
             title="Economia"
-            value="R$ 5.250,00"
+            value={`R$ ${stats.savings.toFixed(2)}`}
             icon={DollarSign}
-            trend="61,8% do total"
+            trend={`${stats.savingsRate} do total`}
             variant="success"
           />
         </div>
@@ -70,10 +76,10 @@ const Index = () => {
         {/* Main Content */}
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <TransactionList />
+            <TransactionList transactions={transactions} />
           </div>
           <div>
-            <QuickAddTransaction />
+            <QuickAddTransaction onAdd={addTransaction} />
           </div>
         </div>
       </div>
