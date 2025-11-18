@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { recurringContractSchema } from "@/lib/validations";
 
 interface AddRecurringContractProps {
   onAdd: (
