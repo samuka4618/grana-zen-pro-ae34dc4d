@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Wallet, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, DollarSign, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
@@ -23,6 +24,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { transactions, stats, addTransaction } = useTransactionsStore(selectedDate);
   const {
@@ -79,6 +81,15 @@ const Index = () => {
               </p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/analytics")}
+                className="gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Análise Avançada
+              </Button>
               <CategoryManager />
               <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>
                 Sair
