@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Analytics from "./pages/Analytics";
 import CreditCards from "./pages/CreditCards";
 import BankAccounts from "./pages/BankAccounts";
+import SharedAccess from "./pages/SharedAccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,16 +48,24 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/bank-accounts"
-              element={
-                <ProtectedRoute>
-                  <BankAccounts />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+          <Route
+            path="/bank-accounts"
+            element={
+              <ProtectedRoute>
+                <BankAccounts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shared-access"
+            element={
+              <ProtectedRoute>
+                <SharedAccess />
+              </ProtectedRoute>
+            }
+          />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
