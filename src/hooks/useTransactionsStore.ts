@@ -11,6 +11,7 @@ export interface Transaction {
   category: string;
   type: "income" | "expense";
   date: Date;
+  attachmentUrl?: string;
 }
 
 export function useTransactionsStore(selectedMonth?: Date) {
@@ -44,6 +45,7 @@ export function useTransactionsStore(selectedMonth?: Date) {
           category: t.category,
           type: t.type as "income" | "expense",
           date: new Date(t.date),
+          attachmentUrl: t.attachment_url || undefined,
         })));
       }
     } catch (error) {
@@ -90,7 +92,8 @@ export function useTransactionsStore(selectedMonth?: Date) {
     description: string,
     amount: number,
     category: string,
-    type: "income" | "expense"
+    type: "income" | "expense",
+    attachmentUrl?: string
   ) => {
     if (!user) return;
 
@@ -104,6 +107,7 @@ export function useTransactionsStore(selectedMonth?: Date) {
           type,
           user_id: user.id,
           date: new Date().toISOString(),
+          attachment_url: attachmentUrl || null,
         }])
         .select()
         .single();
@@ -118,6 +122,7 @@ export function useTransactionsStore(selectedMonth?: Date) {
           category: data.category,
           type: data.type as "income" | "expense",
           date: new Date(data.date),
+          attachmentUrl: data.attachment_url || undefined,
         }, ...prev]);
         toast.success("Transação adicionada");
       }

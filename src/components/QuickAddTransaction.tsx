@@ -8,9 +8,10 @@ import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 import { transactionSchema } from "@/lib/validations";
+import { AttachmentUpload } from "./AttachmentUpload";
 
 interface QuickAddTransactionProps {
-  onAdd: (description: string, amount: number, category: string, type: "income" | "expense") => void;
+  onAdd: (description: string, amount: number, category: string, type: "income" | "expense", attachmentUrl?: string) => void;
 }
 
 export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
@@ -19,6 +20,7 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
+  const [attachmentUrl, setAttachmentUrl] = useState<string | undefined>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +41,14 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
       return;
     }
 
-    onAdd(description, numAmount, category, type);
+    onAdd(description, numAmount, category, type, attachmentUrl);
     toast.success(`Transação de ${type === "income" ? "receita" : "despesa"} adicionada!`);
     
     // Reset form
     setDescription("");
     setAmount("");
     setCategory("");
+    setAttachmentUrl(undefined);
   };
 
   return (
@@ -112,6 +115,12 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
             </SelectContent>
           </Select>
         </div>
+
+        <AttachmentUpload
+          onUploadComplete={(url) => setAttachmentUrl(url)}
+          currentAttachment={attachmentUrl}
+          onRemove={() => setAttachmentUrl(undefined)}
+        />
 
         <Button type="submit" className="w-full gap-2">
           <PlusCircle className="h-4 w-4" />
