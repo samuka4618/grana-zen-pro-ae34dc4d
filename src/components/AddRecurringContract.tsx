@@ -30,25 +30,25 @@ export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!description || !amount || !dueDay || !category) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
-
     const numAmount = parseFloat(amount);
-    const day = parseInt(dueDay);
+    const numDueDay = parseInt(dueDay);
+    
+    // Validação com Zod
+    const validation = recurringContractSchema.safeParse({
+      description,
+      amount: numAmount,
+      dueDay: numDueDay,
+      category,
+      type,
+    });
 
-    if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error("Valor inválido");
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
-    if (isNaN(day) || day < 1 || day > 31) {
-      toast.error("Dia do vencimento inválido (1-31)");
-      return;
-    }
-
-    onAdd(description, numAmount, day, category, type);
+    onAdd(description, numAmount, numDueDay, category, type);
     toast.success(`Contrato fixo adicionado!`);
 
     // Reset form
@@ -92,6 +92,7 @@ export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
             placeholder="Ex: Internet VIVO, Aluguel..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
           />
         </div>
 
@@ -102,6 +103,8 @@ export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
               id="amount"
               type="number"
               step="0.01"
+              min="0.01"
+              max="999999999.99"
               placeholder="150,00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}

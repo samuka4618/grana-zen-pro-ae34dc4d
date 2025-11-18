@@ -12,6 +12,7 @@ import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { installmentSchema } from "@/lib/validations";
 
 interface AddInstallmentProps {
   onAdd: (
@@ -36,26 +37,27 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!description || !totalAmount || !installmentCount || !category || !startDate) {
-      toast.error("Preencha todos os campos");
+    const numTotalAmount = parseFloat(totalAmount);
+    const numInstallmentCount = parseInt(installmentCount);
+    
+    // Validação com Zod
+    const validation = installmentSchema.safeParse({
+      description,
+      totalAmount: numTotalAmount,
+      installmentCount: numInstallmentCount,
+      category,
+      type,
+      startDate,
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
-    const amount = parseFloat(totalAmount);
-    const count = parseInt(installmentCount);
-
-    if (isNaN(amount) || amount <= 0) {
-      toast.error("Valor total inválido");
-      return;
-    }
-
-    if (isNaN(count) || count <= 0 || count > 120) {
-      toast.error("Número de parcelas inválido (1-120)");
-      return;
-    }
-
-    onAdd(description, amount, count, startDate, category, type);
-    toast.success(`Financiamento de ${count}x adicionado!`);
+    onAdd(description, numTotalAmount, numInstallmentCount, startDate!, category, type);
+    toast.success(`Financiamento de ${numInstallmentCount}x adicionado!`);
 
     // Reset form
     setDescription("");
@@ -103,6 +105,7 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
             placeholder="Ex: Carro, Celular..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
           />
         </div>
 
@@ -126,8 +129,8 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
             <Input
               id="installmentCount"
               type="number"
-              min="1"
-              max="120"
+              min="2"
+              max="999"
               placeholder="12"
               value={installmentCount}
               onChange={(e) => setInstallmentCount(e.target.value)}

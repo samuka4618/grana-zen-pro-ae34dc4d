@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Plus, Trash2 } from "lucide-react";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 import { toast } from "sonner";
+import { categorySchema } from "@/lib/validations";
 
 export function CategoryManager() {
   const { categories, addCategory, deleteCategory, getCategoriesByType } = useCategoriesStore();
@@ -23,8 +24,15 @@ export function CategoryManager() {
   const [open, setOpen] = useState(false);
 
   const handleAddCategory = () => {
-    if (!newCategoryName.trim()) {
-      toast.error("Digite o nome da categoria");
+    // Validação com Zod
+    const validation = categorySchema.safeParse({
+      name: newCategoryName,
+      type: activeTab,
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
@@ -68,6 +76,7 @@ export function CategoryManager() {
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+                  maxLength={100}
                 />
                 <Button onClick={handleAddCategory} size="icon">
                   <Plus className="h-4 w-4" />
@@ -108,6 +117,7 @@ export function CategoryManager() {
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+                  maxLength={100}
                 />
                 <Button onClick={handleAddCategory} size="icon">
                   <Plus className="h-4 w-4" />
