@@ -127,11 +127,34 @@ export function useTransactionsStore(selectedMonth?: Date) {
     }
   };
 
+  const updateTransactionCategory = async (id: string, category: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("transactions")
+        .update({ category })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setTransactions((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, category } : t))
+      );
+      toast.success("Categoria atualizada");
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      toast.error("Erro ao atualizar categoria");
+    }
+  };
+
   return {
     transactions: filteredTransactions,
     allTransactions: transactions,
     stats,
     addTransaction,
+    updateTransactionCategory,
     loading,
   };
 }

@@ -7,13 +7,15 @@ import { CreditCard, Trash2, Calendar } from "lucide-react";
 import { format, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { EditCategoryDialog } from "./EditCategoryDialog";
 
 interface InstallmentsListProps {
   installments: Installment[];
   onDelete: (id: string) => void;
+  onUpdateCategory?: (id: string, category: string) => void;
 }
 
-export function InstallmentsList({ installments, onDelete }: InstallmentsListProps) {
+export function InstallmentsList({ installments, onDelete, onUpdateCategory }: InstallmentsListProps) {
   const activeInstallments = installments.filter(
     (i) => i.currentInstallment <= i.installmentCount
   );
@@ -58,16 +60,25 @@ export function InstallmentsList({ installments, onDelete }: InstallmentsListPro
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-semibold">{installment.description}</p>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        installment.type === "income"
-                          ? "bg-success/10 text-success border-success/20"
-                          : "bg-danger/10 text-danger border-danger/20"
+                    <div className="flex items-center gap-1">
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          installment.type === "income"
+                            ? "bg-success/10 text-success border-success/20"
+                            : "bg-danger/10 text-danger border-danger/20"
+                        )}
+                      >
+                        {installment.category}
+                      </Badge>
+                      {onUpdateCategory && (
+                        <EditCategoryDialog
+                          currentCategory={installment.category}
+                          type={installment.type}
+                          onUpdate={(newCategory) => onUpdateCategory(installment.id, newCategory)}
+                        />
                       )}
-                    >
-                      {installment.category}
-                    </Badge>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
