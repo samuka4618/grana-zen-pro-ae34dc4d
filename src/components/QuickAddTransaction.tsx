@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { transactionSchema } from "@/lib/validations";
 
 interface QuickAddTransactionProps {
   onAdd: (description: string, amount: number, category: string, type: "income" | "expense") => void;
@@ -22,14 +23,19 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!description || !amount || !category) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
-
     const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error("Valor inválido");
+    
+    // Validação com Zod
+    const validation = transactionSchema.safeParse({
+      description,
+      amount: numAmount,
+      category,
+      type,
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
@@ -73,6 +79,7 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
             placeholder="Ex: Mercado, Salário..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
           />
         </div>
 
@@ -82,6 +89,8 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
             id="amount"
             type="number"
             step="0.01"
+            min="0.01"
+            max="999999999.99"
             placeholder="0,00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}

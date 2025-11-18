@@ -107,17 +107,19 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="totalAmount">Valor Total</Label>
-            <Input
-              id="totalAmount"
-              type="number"
-              step="0.01"
-              placeholder="0,00"
-              value={totalAmount}
-              onChange={(e) => setTotalAmount(e.target.value)}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="totalAmount">Valor Total</Label>
+          <Input
+            id="totalAmount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            max="999999999.99"
+            placeholder="0,00"
+            value={totalAmount}
+            onChange={(e) => setTotalAmount(e.target.value)}
+          />
+        </div>
 
           <div className="space-y-2">
             <Label htmlFor="installmentCount">Parcelas</Label>
