@@ -45,6 +45,24 @@ const Index = () => {
   const projections = getProjection(5, selectedDate);
   const recurringExpenses = getMonthlyTotal("expense");
   const recurringIncome = getMonthlyTotal("income");
+  
+  // Calcular parcelas do mês atual
+  const currentMonthInstallments = projections[0]?.installments || [];
+  const installmentExpenses = currentMonthInstallments
+    .filter(i => i.type === "expense")
+    .reduce((sum, i) => sum + i.installmentAmount, 0);
+  const installmentIncome = currentMonthInstallments
+    .filter(i => i.type === "income")
+    .reduce((sum, i) => sum + i.installmentAmount, 0);
+  
+  // Ajustar stats com contratos e parcelas do mês
+  const adjustedStats = {
+    income: stats.income + recurringIncome + installmentIncome,
+    expenses: stats.expenses + recurringExpenses + installmentExpenses,
+    balance: (stats.income + recurringIncome + installmentIncome) - (stats.expenses + recurringExpenses + installmentExpenses),
+    savings: (stats.income + recurringIncome + installmentIncome) - (stats.expenses + recurringExpenses + installmentExpenses),
+    savingsRate: stats.savingsRate,
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,30 +99,30 @@ const Index = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Saldo"
-            value={`R$ ${stats.balance.toFixed(2)}`}
+            value={`R$ ${adjustedStats.balance.toFixed(2)}`}
             icon={Wallet}
             trend={monthYear}
-            variant={stats.balance >= 0 ? "default" : "danger"}
+            variant={adjustedStats.balance >= 0 ? "default" : "danger"}
           />
           <StatCard
             title="Receitas"
-            value={`R$ ${stats.income.toFixed(2)}`}
+            value={`R$ ${adjustedStats.income.toFixed(2)}`}
             icon={TrendingUp}
             trend={monthYear}
             variant="success"
           />
           <StatCard
             title="Despesas"
-            value={`R$ ${stats.expenses.toFixed(2)}`}
+            value={`R$ ${adjustedStats.expenses.toFixed(2)}`}
             icon={TrendingDown}
             trend={monthYear}
             variant="danger"
           />
           <StatCard
             title="Economia"
-            value={`R$ ${stats.savings.toFixed(2)}`}
+            value={`R$ ${adjustedStats.savings.toFixed(2)}`}
             icon={DollarSign}
-            trend={`${stats.savingsRate} do total`}
+            trend={`${adjustedStats.savingsRate} do total`}
             variant="success"
           />
         </div>
