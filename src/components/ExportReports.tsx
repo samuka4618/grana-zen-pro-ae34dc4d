@@ -109,15 +109,17 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-sm truncate",
                     !startDate && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, "PPP", { locale: ptBR }) : "Selecione"}
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    {startDate ? format(startDate, "PPP", { locale: ptBR }) : "Selecione"}
+                  </span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 z-50 bg-popover border border-border rounded-md shadow-md" align="start">
                 <Calendar
                   mode="single"
                   selected={startDate}
@@ -137,15 +139,17 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-sm truncate",
                     !endDate && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, "PPP", { locale: ptBR }) : "Selecione"}
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    {endDate ? format(endDate, "PPP", { locale: ptBR }) : "Selecione"}
+                  </span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 z-50 bg-popover border border-border rounded-md shadow-md" align="start">
                 <Calendar
                   mode="single"
                   selected={endDate}
