@@ -1,5 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
-import { addMonths, isBefore, isAfter, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { useState, useEffect } from "react";
+import { addMonths, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
+import { toast } from "sonner";
 
 export interface Installment {
   id: string;
@@ -13,23 +16,50 @@ export interface Installment {
   type: "expense" | "income";
 }
 
-const STORAGE_KEY = "financial-installments";
-
 export function useInstallmentsStore() {
-  const [installments, setInstallments] = useState<Installment[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((i: any) => ({ ...i, startDate: new Date(i.startDate) }));
-    }
-    return [];
-  });
+  const { user } = useAuth();
+  const [installments, setInstallments] = useState<Installment[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(installments));
-  }, [installments]);
+    if (user) {
+      fetchInstallments();
+    }
+  }, [user]);
 
-  const addInstallment = (
+  const fetchInstallments = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("installments")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      if (data) {
+        setInstallments(data.map(i => ({ 
+          id: i.id,
+          description: i.description,
+          totalAmount: Number(i.total_amount),
+          installmentCount: i.installment_count,
+          currentInstallment: i.current_installment,
+          installmentAmount: Number(i.installment_amount),
+          startDate: new Date(i.start_date),
+          category: i.category,
+          type: i.type as "expense" | "income",
+        })));
+      }
+    } catch (error) {
+      console.error("Error fetching installments:", error);
+      toast.error("Erro ao carregar parcelas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addInstallment = async (
     description: string,
     totalAmount: number,
     installmentCount: number,
@@ -37,23 +67,66 @@ export function useInstallmentsStore() {
     category: string,
     type: "expense" | "income"
   ) => {
+    if (!user) return;
+
     const installmentAmount = totalAmount / installmentCount;
-    const newInstallment: Installment = {
-      id: Date.now().toString(),
-      description,
-      totalAmount,
-      installmentCount,
-      currentInstallment: 1,
-      installmentAmount,
-      startDate,
-      category,
-      type,
-    };
-    setInstallments((prev) => [...prev, newInstallment]);
+
+    try {
+      const { data, error } = await supabase
+        .from("installments")
+        .insert([{
+          description,
+          total_amount: totalAmount,
+          installment_count: installmentCount,
+          installment_amount: installmentAmount,
+          start_date: startDate.toISOString(),
+          category,
+          type,
+          user_id: user.id,
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setInstallments((prev) => [...prev, {
+          id: data.id,
+          description: data.description,
+          totalAmount: Number(data.total_amount),
+          installmentCount: data.installment_count,
+          currentInstallment: data.current_installment,
+          installmentAmount: Number(data.installment_amount),
+          startDate: new Date(data.start_date),
+          category: data.category,
+          type: data.type as "expense" | "income",
+        }]);
+        toast.success("Parcela adicionada");
+      }
+    } catch (error) {
+      console.error("Error adding installment:", error);
+      toast.error("Erro ao adicionar parcela");
+    }
   };
 
-  const deleteInstallment = (id: string) => {
-    setInstallments((prev) => prev.filter((i) => i.id !== id));
+  const deleteInstallment = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("installments")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      
+      setInstallments((prev) => prev.filter((i) => i.id !== id));
+      toast.success("Parcela removida");
+    } catch (error) {
+      console.error("Error deleting installment:", error);
+      toast.error("Erro ao remover parcela");
+    }
   };
 
   const getActiveInstallments = () => {
@@ -67,7 +140,6 @@ export function useInstallmentsStore() {
     const end = endOfMonth(month);
 
     return installments.filter((installment) => {
-      // Calculate which months this installment spans
       for (let i = 0; i < installment.installmentCount; i++) {
         const installmentDate = addMonths(installment.startDate, i);
         if (isWithinInterval(installmentDate, { start, end })) {
@@ -112,5 +184,6 @@ export function useInstallmentsStore() {
     getActiveInstallments,
     getInstallmentsForMonth,
     getProjection,
+    loading,
   };
 }

@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
+import { toast } from "sonner";
 
 export interface Category {
   id: string;
@@ -23,29 +26,117 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "11", name: "Compras", type: "expense" },
 ];
 
-const STORAGE_KEY = "financial-categories";
-
 export function useCategoriesStore() {
-  const [categories, setCategories] = useState<Category[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
-  });
+  const { user } = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-  }, [categories]);
+    if (user) {
+      fetchCategories();
+    }
+  }, [user]);
 
-  const addCategory = (name: string, type: "income" | "expense") => {
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name,
-      type,
-    };
-    setCategories((prev) => [...prev, newCategory]);
+  const fetchCategories = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setCategories(data.map(cat => ({
+          id: cat.id,
+          name: cat.name,
+          type: cat.type as "income" | "expense",
+        })));
+      } else {
+        // First time user - insert default categories
+        await insertDefaultCategories();
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Erro ao carregar categorias");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteCategory = (id: string) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+  const insertDefaultCategories = async () => {
+    if (!user) return;
+
+    try {
+      const categoriesToInsert = DEFAULT_CATEGORIES.map(cat => ({
+        name: cat.name,
+        type: cat.type,
+        user_id: user.id,
+      }));
+
+      const { data, error } = await supabase
+        .from("categories")
+        .insert(categoriesToInsert)
+        .select();
+
+      if (error) throw error;
+      if (data) {
+        setCategories(data.map(cat => ({
+          id: cat.id,
+          name: cat.name,
+          type: cat.type as "income" | "expense",
+        })));
+      }
+    } catch (error) {
+      console.error("Error inserting default categories:", error);
+    }
+  };
+
+  const addCategory = async (name: string, type: "income" | "expense") => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .insert([{ name, type, user_id: user.id }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setCategories((prev) => [...prev, {
+          id: data.id,
+          name: data.name,
+          type: data.type as "income" | "expense",
+        }]);
+        toast.success("Categoria adicionada");
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+      toast.error("Erro ao adicionar categoria");
+    }
+  };
+
+  const deleteCategory = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      
+      setCategories((prev) => prev.filter((cat) => cat.id !== id));
+      toast.success("Categoria removida");
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      toast.error("Erro ao remover categoria");
+    }
   };
 
   const getCategoriesByType = (type: "income" | "expense") => {
@@ -57,5 +148,6 @@ export function useCategoriesStore() {
     addCategory,
     deleteCategory,
     getCategoriesByType,
+    loading,
   };
 }
