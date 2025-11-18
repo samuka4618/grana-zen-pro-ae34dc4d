@@ -1,25 +1,38 @@
+import { useState } from "react";
 import { Wallet, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { TransactionList } from "@/components/TransactionList";
 import { QuickAddTransaction } from "@/components/QuickAddTransaction";
 import { CategoryManager } from "@/components/CategoryManager";
-import { MonthlyCalendar } from "@/components/MonthlyCalendar";
+import { MonthPicker } from "@/components/MonthPicker";
 
 const Index = () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-8">
         {/* Header */}
-        <header className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Controle Financeiro
-            </h1>
-            <p className="text-muted-foreground">
-              Gerencie suas finanças de forma simples e poderosa
-            </p>
+        <header className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Controle Financeiro
+              </h1>
+              <p className="text-muted-foreground">
+                Gerencie suas finanças de forma simples e poderosa
+              </p>
+            </div>
+            <CategoryManager />
           </div>
-          <CategoryManager />
+          
+          {/* Month Picker */}
+          <div className="flex items-center gap-4 p-4 rounded-lg border bg-card">
+            <span className="text-sm font-medium text-muted-foreground">
+              Período:
+            </span>
+            <MonthPicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
+          </div>
         </header>
 
         {/* Stats Grid */}
@@ -56,8 +69,7 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <MonthlyCalendar />
+          <div className="lg:col-span-2">
             <TransactionList />
           </div>
           <div>
