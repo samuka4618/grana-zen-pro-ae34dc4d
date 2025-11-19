@@ -8,6 +8,8 @@ import { ShoppingCart } from "lucide-react";
 import { useCreditCardsStore } from "@/hooks/useCreditCardsStore";
 import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency, formatCurrency } from "@/lib/currency";
 import { toast } from "sonner";
 
 export function AddCreditCardPurchase() {
@@ -31,7 +33,7 @@ export function AddCreditCardPurchase() {
       return;
     }
 
-    const amount = parseFloat(totalAmount);
+    const amount = parseCurrency(totalAmount);
     const numInstallments = parseInt(installments);
 
     if (amount <= 0 || numInstallments <= 0) {
@@ -48,7 +50,7 @@ export function AddCreditCardPurchase() {
     setCategory("");
   };
 
-  const installmentAmount = totalAmount ? (parseFloat(totalAmount) / parseInt(installments || "1")).toFixed(2) : "0.00";
+  const installmentAmount = totalAmount ? formatCurrency(parseCurrency(totalAmount) / parseInt(installments || "1")) : "R$ 0,00";
 
   if (activeCards.length === 0) {
     return (
@@ -102,12 +104,10 @@ export function AddCreditCardPurchase() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="totalAmount">Valor Total</Label>
-            <Input
+            <CurrencyInput
               id="totalAmount"
-              type="number"
-              step="0.01"
               value={totalAmount}
-              onChange={(e) => setTotalAmount(e.target.value)}
+              onChange={setTotalAmount}
               placeholder="0,00"
             />
           </div>

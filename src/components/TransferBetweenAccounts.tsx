@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeftRight } from "lucide-react";
 import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency, formatCurrency } from "@/lib/currency";
 
 export function TransferBetweenAccounts() {
   const { getActiveAccounts, transferBetweenAccounts } = useBankAccountsStore();
@@ -27,7 +29,7 @@ export function TransferBetweenAccounts() {
     await transferBetweenAccounts(
       fromAccountId,
       toAccountId,
-      parseFloat(amount),
+      parseCurrency(amount),
       description || "Transferência"
     );
 
@@ -68,7 +70,7 @@ export function TransferBetweenAccounts() {
             <SelectContent>
               {activeAccounts.map((account) => (
                 <SelectItem key={account.id} value={account.id}>
-                  {account.name} - R$ {account.currentBalance.toFixed(2)}
+                  {account.name} - {formatCurrency(account.currentBalance)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -86,7 +88,7 @@ export function TransferBetweenAccounts() {
                 .filter((account) => account.id !== fromAccountId)
                 .map((account) => (
                   <SelectItem key={account.id} value={account.id}>
-                    {account.name} - R$ {account.currentBalance.toFixed(2)}
+                    {account.name} - {formatCurrency(account.currentBalance)}
                   </SelectItem>
                 ))}
             </SelectContent>
@@ -95,13 +97,11 @@ export function TransferBetweenAccounts() {
 
         <div className="space-y-2">
           <Label htmlFor="amount">Valor *</Label>
-          <Input
+          <CurrencyInput
             id="amount"
-            type="number"
-            step="0.01"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="0.00"
+            onChange={setAmount}
+            placeholder="0,00"
             required
           />
         </div>

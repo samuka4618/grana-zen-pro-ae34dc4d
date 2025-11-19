@@ -9,6 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency, formatCurrency } from "@/lib/currency";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -37,7 +39,7 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const numTotalAmount = parseFloat(totalAmount);
+    const numTotalAmount = parseCurrency(totalAmount);
     const numInstallmentCount = parseInt(installmentCount);
     
     // Validação com Zod
@@ -68,8 +70,8 @@ export function AddInstallment({ onAdd }: AddInstallmentProps) {
   };
 
   const installmentValue = totalAmount && installmentCount
-    ? (parseFloat(totalAmount) / parseInt(installmentCount)).toFixed(2)
-    : "0.00";
+    ? formatCurrency(parseCurrency(totalAmount) / parseInt(installmentCount))
+    : "R$ 0,00";
 
   return (
     <Card className="p-6">

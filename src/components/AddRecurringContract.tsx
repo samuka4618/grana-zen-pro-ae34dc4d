@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency } from "@/lib/currency";
 import { recurringContractSchema } from "@/lib/validations";
 
 interface AddRecurringContractProps {
@@ -30,7 +32,7 @@ export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const numAmount = parseFloat(amount);
+    const numAmount = parseCurrency(amount);
     const numDueDay = parseInt(dueDay);
     
     // Validação com Zod
@@ -99,15 +101,11 @@ export function AddRecurringContract({ onAdd }: AddRecurringContractProps) {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Valor Mensal</Label>
-            <Input
+            <CurrencyInput
               id="amount"
-              type="number"
-              step="0.01"
-              min="0.01"
-              max="999999999.99"
-              placeholder="150,00"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={setAmount}
+              placeholder="150,00"
             />
           </div>
 

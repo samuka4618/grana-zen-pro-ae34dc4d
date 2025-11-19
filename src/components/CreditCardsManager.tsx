@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { CreditCard, Trash2, Plus, Eye, EyeOff } from "lucide-react";
 import { useCreditCardsStore } from "@/hooks/useCreditCardsStore";
 import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency, formatCurrency } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 export function CreditCardsManager() {
@@ -28,7 +30,7 @@ export function CreditCardsManager() {
     addCard(
       name,
       lastFourDigits,
-      parseFloat(creditLimit),
+      parseCurrency(creditLimit),
       parseInt(closingDay),
       parseInt(dueDay)
     );
@@ -85,12 +87,10 @@ export function CreditCardsManager() {
 
             <div>
               <Label htmlFor="creditLimit">Limite Total</Label>
-              <Input
+              <CurrencyInput
                 id="creditLimit"
-                type="number"
-                step="0.01"
                 value={creditLimit}
-                onChange={(e) => setCreditLimit(e.target.value)}
+                onChange={setCreditLimit}
                 placeholder="0,00"
               />
             </div>
@@ -157,7 +157,7 @@ export function CreditCardsManager() {
                     <div className="space-y-2">
                       <div className="text-sm">
                         <span className="text-muted-foreground">Limite: </span>
-                        <span className="font-medium">R$ {card.creditLimit.toFixed(2)}</span>
+                        <span className="font-medium">{formatCurrency(card.creditLimit)}</span>
                       </div>
 
                       <div className="text-sm">
@@ -166,7 +166,7 @@ export function CreditCardsManager() {
                           "font-medium",
                           usagePercentage > 80 ? "text-danger" : "text-success"
                         )}>
-                          R$ {availableLimit.toFixed(2)}
+                          {formatCurrency(availableLimit)}
                         </span>
                       </div>
 
