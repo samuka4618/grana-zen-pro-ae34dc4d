@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { Plus, Building2, Trash2, Power, ArrowLeftRight } from "lucide-react";
 import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency, formatCurrency } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 const ACCOUNT_COLORS = [
@@ -44,7 +46,7 @@ export function BankAccountsManager() {
       name,
       bankName,
       accountType,
-      parseFloat(initialBalance) || 0,
+      parseCurrency(initialBalance) || 0,
       selectedColor
     );
 

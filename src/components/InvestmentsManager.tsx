@@ -19,6 +19,8 @@ import {
 import { Plus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvestmentsStore } from "@/hooks/useInvestmentsStore";
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { parseCurrency } from "@/lib/currency";
 import { useToast } from "@/hooks/use-toast";
 
 const investmentTypes = [
@@ -61,8 +63,8 @@ export const InvestmentsManager = () => {
         type: formData.type,
         ticker_symbol: formData.ticker_symbol || undefined,
         quantity: parseFloat(formData.quantity),
-        purchase_price: parseFloat(formData.purchase_price),
-        current_price: parseFloat(formData.current_price),
+        purchase_price: parseCurrency(formData.purchase_price),
+        current_price: parseCurrency(formData.current_price),
         purchase_date: new Date(formData.purchase_date).toISOString(),
       });
 
