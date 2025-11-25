@@ -68,6 +68,7 @@ export function useTransactionsStore(selectedMonth?: Date) {
   }, [transactions, selectedMonth]);
 
   const stats = useMemo(() => {
+    // Calcular apenas do mês selecionado
     const income = filteredTransactions
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
@@ -76,17 +77,48 @@ export function useTransactionsStore(selectedMonth?: Date) {
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const balance = income - expenses;
-    const savingsRate = income > 0 ? ((balance / income) * 100).toFixed(1) : "0.0";
+    const monthlyBalance = income - expenses;
+    const savingsRate = income > 0 ? ((monthlyBalance / income) * 100).toFixed(1) : "0.0";
+
+    // Calcular saldo acumulado (todas as transações até o mês selecionado)
+    let accumulatedBalance = 0;
+    if (selectedMonth) {
+      const endOfSelectedMonth = endOfMonth(selectedMonth);
+      const transactionsUntilMonth = transactions.filter(
+        (t) => t.date <= endOfSelectedMonth
+      );
+      
+      const accumulatedIncome = transactionsUntilMonth
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const accumulatedExpenses = transactionsUntilMonth
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      accumulatedBalance = accumulatedIncome - accumulatedExpenses;
+    } else {
+      // Se não há mês selecionado, usar todas as transações
+      const allIncome = transactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const allExpenses = transactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      accumulatedBalance = allIncome - allExpenses;
+    }
 
     return {
-      balance,
+      balance: accumulatedBalance, // Saldo acumulado até o mês
+      monthlyBalance, // Saldo apenas do mês selecionado
       income,
       expenses,
-      savings: balance,
+      savings: monthlyBalance, // Economia do mês
       savingsRate: `${savingsRate}%`,
     };
-  }, [filteredTransactions]);
+  }, [filteredTransactions, transactions, selectedMonth]);
 
   const addTransaction = async (
     description: string,

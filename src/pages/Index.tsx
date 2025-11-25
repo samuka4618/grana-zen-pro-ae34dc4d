@@ -69,12 +69,26 @@ const Index = () => {
     .filter(i => i.type === "income")
     .reduce((sum, i) => sum + i.installmentAmount, 0);
   
+  // Calcular receitas e despesas do mês (incluindo recorrentes e parcelas)
+  const monthlyIncome = stats.income + recurringIncome + installmentIncome;
+  const monthlyExpenses = stats.expenses + recurringExpenses + installmentExpenses;
+  const monthlyBalance = monthlyIncome - monthlyExpenses;
+  
+  // stats.balance = saldo acumulado até o mês selecionado (sem recorrentes/parcelas)
+  // stats.monthlyBalance = saldo apenas do mês selecionado (sem recorrentes/parcelas)
+  // Para calcular o saldo acumulado com recorrentes/parcelas:
+  // 1. Pegar saldo até mês anterior: stats.balance - stats.monthlyBalance
+  // 2. Somar saldo do mês atual (com recorrentes/parcelas): monthlyBalance
+  const previousMonthBalance = stats.balance - stats.monthlyBalance; // Saldo até mês anterior
+  const accumulatedBalance = previousMonthBalance + monthlyBalance; // Saldo acumulado incluindo mês atual
+  
   // Ajustar stats com contratos e parcelas do mês
   const adjustedStats = {
-    income: stats.income + recurringIncome + installmentIncome,
-    expenses: stats.expenses + recurringExpenses + installmentExpenses,
-    balance: (stats.income + recurringIncome + installmentIncome) - (stats.expenses + recurringExpenses + installmentExpenses),
-    savings: (stats.income + recurringIncome + installmentIncome) - (stats.expenses + recurringExpenses + installmentExpenses),
+    income: monthlyIncome,
+    expenses: monthlyExpenses,
+    balance: accumulatedBalance, // Saldo acumulado (inclui meses anteriores + recorrentes/parcelas)
+    monthlyBalance: monthlyBalance, // Saldo apenas do mês atual
+    savings: monthlyBalance, // Economia do mês
     savingsRate: stats.savingsRate,
   };
 
