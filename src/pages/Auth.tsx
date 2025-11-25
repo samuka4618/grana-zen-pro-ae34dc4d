@@ -54,8 +54,9 @@ export default function Auth() {
 
       toast.success("Conta criada com sucesso!");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao criar conta";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -92,8 +93,9 @@ export default function Auth() {
 
       toast.success("Login realizado com sucesso!");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao fazer login";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
