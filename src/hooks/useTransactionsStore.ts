@@ -179,12 +179,33 @@ export function useTransactionsStore(selectedMonth?: Date) {
     }
   };
 
+  const deleteTransaction = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("transactions")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setTransactions((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Transação excluída");
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+      toast.error("Erro ao excluir transação");
+    }
+  };
+
   return {
     transactions: filteredTransactions,
     allTransactions: transactions,
     stats,
     addTransaction,
     updateTransactionCategory,
+    deleteTransaction,
     loading,
   };
 }

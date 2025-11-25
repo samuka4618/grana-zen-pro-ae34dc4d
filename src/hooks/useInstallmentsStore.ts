@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { addMonths, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { addMonths, startOfMonth, endOfMonth, isWithinInterval, differenceInMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
@@ -27,6 +27,28 @@ export function useInstallmentsStore() {
     }
   }, [user]);
 
+  /**
+   * Calcula a parcela atual baseada na data de início e na data atual
+   * @param startDate - Data de início do financiamento
+   * @param totalInstallments - Total de parcelas
+   * @returns Número da parcela atual (1-indexed)
+   */
+  const calculateCurrentInstallment = (startDate: Date, totalInstallments: number): number => {
+    const now = new Date();
+    const start = startOfMonth(startDate);
+    const current = startOfMonth(now);
+    
+    // Calcula a diferença em meses
+    const monthsDiff = differenceInMonths(current, start);
+    
+    // A parcela atual é a diferença + 1 (se começou há 1 mês, está na parcela 2)
+    // Mas não pode ser maior que o total de parcelas
+    const currentInstallment = Math.min(monthsDiff + 1, totalInstallments);
+    
+    // Não pode ser menor que 1
+    return Math.max(1, currentInstallment);
+  };
+
   const fetchInstallments = async () => {
     if (!user) return;
     
@@ -39,17 +61,25 @@ export function useInstallmentsStore() {
       if (error) throw error;
 
       if (data) {
-        setInstallments(data.map(i => ({ 
-          id: i.id,
-          description: i.description,
-          totalAmount: Number(i.total_amount),
-          installmentCount: i.installment_count,
-          currentInstallment: i.current_installment,
-          installmentAmount: Number(i.installment_amount),
-          startDate: new Date(i.start_date),
-          category: i.category,
-          type: i.type as "expense" | "income",
-        })));
+        setInstallments(data.map(i => {
+          const startDate = new Date(i.start_date);
+          const calculatedCurrentInstallment = calculateCurrentInstallment(
+            startDate,
+            i.installment_count
+          );
+          
+          return {
+            id: i.id,
+            description: i.description,
+            totalAmount: Number(i.total_amount),
+            installmentCount: i.installment_count,
+            currentInstallment: calculatedCurrentInstallment,
+            installmentAmount: Number(i.installment_amount),
+            startDate: startDate,
+            category: i.category,
+            type: i.type as "expense" | "income",
+          };
+        }));
       }
     } catch (error) {
       console.error("Error fetching installments:", error);
@@ -90,14 +120,20 @@ export function useInstallmentsStore() {
       if (error) throw error;
       
       if (data) {
+        const startDate = new Date(data.start_date);
+        const calculatedCurrentInstallment = calculateCurrentInstallment(
+          startDate,
+          data.installment_count
+        );
+        
         setInstallments((prev) => [...prev, {
           id: data.id,
           description: data.description,
           totalAmount: Number(data.total_amount),
           installmentCount: data.installment_count,
-          currentInstallment: data.current_installment,
+          currentInstallment: calculatedCurrentInstallment,
           installmentAmount: Number(data.installment_amount),
-          startDate: new Date(data.start_date),
+          startDate: startDate,
           category: data.category,
           type: data.type as "expense" | "income",
         }]);
@@ -152,9 +188,17 @@ export function useInstallmentsStore() {
   };
 
   const getActiveInstallments = () => {
-    return installments.filter(
-      (i) => i.currentInstallment <= i.installmentCount
-    );
+    // Recalcula a parcela atual para cada installment baseado na data atual
+    const now = new Date();
+    return installments
+      .map(i => {
+        const calculatedCurrent = calculateCurrentInstallment(i.startDate, i.installmentCount);
+        return {
+          ...i,
+          currentInstallment: calculatedCurrent,
+        };
+      })
+      .filter((i) => i.currentInstallment <= i.installmentCount);
   };
 
   const getInstallmentsForMonth = (month: Date) => {

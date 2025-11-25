@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { formatCurrencyInput, parseCurrency } from "@/lib/currency";
 
@@ -24,14 +24,22 @@ export function CurrencyInput({
   className,
 }: CurrencyInputProps) {
   const [displayValue, setDisplayValue] = useState(value);
+  const isInternalUpdate = useRef(false);
 
   useEffect(() => {
+    // Ignora atualizações internas
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
+    }
+
     if (value === "") {
       setDisplayValue("");
-    } else if (value !== displayValue) {
+    } else {
       // Formata o valor quando recebido externamente
       const numericValue = parseCurrency(value);
-      setDisplayValue(formatCurrencyInput(numericValue.toString()));
+      const formatted = formatCurrencyInput(numericValue.toString());
+      setDisplayValue(formatted);
     }
   }, [value]);
 
@@ -41,6 +49,7 @@ export function CurrencyInput({
     // Permite apagar completamente
     if (inputValue === "") {
       setDisplayValue("");
+      isInternalUpdate.current = true;
       onChange("");
       onValueChange?.(0);
       return;
@@ -49,10 +58,12 @@ export function CurrencyInput({
     // Formata enquanto digita
     const formatted = formatCurrencyInput(inputValue);
     setDisplayValue(formatted);
-    onChange(formatted);
     
     // Envia valor numérico
     const numericValue = parseCurrency(formatted);
+    
+    isInternalUpdate.current = true;
+    onChange(formatted);
     onValueChange?.(numericValue);
   };
 
@@ -64,9 +75,13 @@ export function CurrencyInput({
     // Garante formatação correta ao sair do campo
     const numericValue = parseCurrency(displayValue);
     const formatted = formatCurrencyInput(numericValue.toString());
-    setDisplayValue(formatted);
-    onChange(formatted);
-    onValueChange?.(numericValue);
+    
+    if (formatted !== displayValue) {
+      setDisplayValue(formatted);
+      isInternalUpdate.current = true;
+      onChange(formatted);
+      onValueChange?.(numericValue);
+    }
   };
 
   return (

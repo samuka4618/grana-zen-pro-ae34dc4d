@@ -7,11 +7,11 @@ import { useCreditCardsStore } from "./useCreditCardsStore";
 import { useCreditCardPurchasesStore } from "./useCreditCardPurchasesStore";
 import { useFinancialGoalsStore } from "./useFinancialGoalsStore";
 import { useCategoriesStore } from "./useCategoriesStore";
-import { addDays, isWithinInterval, startOfMonth, endOfMonth, format } from "date-fns";
+import { addDays, isWithinInterval, startOfMonth, endOfMonth, format, addMonths, differenceInMonths, startOfMonth as startOfMonthFn } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function useNotificationChecker() {
-  const { addNotification } = useNotificationsStore();
+  const { addNotification, notifications } = useNotificationsStore();
   const { allTransactions } = useTransactionsStore(new Date());
   const { contracts } = useRecurringContractsStore();
   const { installments } = useInstallmentsStore();
@@ -19,6 +19,36 @@ export function useNotificationChecker() {
   const { getInvoiceData } = useCreditCardPurchasesStore();
   const { goals } = useFinancialGoalsStore();
   const { categories } = useCategoriesStore();
+
+  /**
+   * Calcula a parcela atual baseada na data de início
+   */
+  const calculateCurrentInstallment = (startDate: Date, totalInstallments: number): number => {
+    const now = new Date();
+    const start = startOfMonthFn(startDate);
+    const current = startOfMonthFn(now);
+    const monthsDiff = differenceInMonths(current, start);
+    const currentInstallment = Math.min(monthsDiff + 1, totalInstallments);
+    return Math.max(1, currentInstallment);
+  };
+
+  /**
+   * Verifica se já existe uma notificação para esta parcela específica
+   * Verifica apenas notificações não lidas criadas nas últimas 24 horas
+   */
+  const notificationExists = (installmentId: string, installmentNumber: number): boolean => {
+    const oneDayAgo = new Date();
+    oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+    
+    return notifications.some(
+      (n) =>
+        n.type === "due_date" &&
+        n.metadata?.installmentId === installmentId &&
+        n.metadata?.installmentNumber === installmentNumber &&
+        !n.read &&
+        n.createdAt >= oneDayAgo
+    );
+  };
 
   useEffect(() => {
     // Check every hour
@@ -34,6 +64,7 @@ export function useNotificationChecker() {
     checkGoals();
 
     return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contracts, installments, cards, allTransactions, goals]);
 
   const checkDueDates = () => {
@@ -78,27 +109,52 @@ export function useNotificationChecker() {
         }
       });
 
-    // Check installments
-    const currentMonth = startOfMonth(today);
-    const endMonth = endOfMonth(today);
-    
+    // Check installments - apenas a próxima parcela
     installments.forEach((inst) => {
-      const installmentDate = new Date(inst.startDate);
+      // Calcula a parcela atual
+      const currentInstallment = calculateCurrentInstallment(inst.startDate, inst.installmentCount);
       
-      for (let i = 0; i < inst.installmentCount; i++) {
-        const dueDate = new Date(
-          installmentDate.getFullYear(),
-          installmentDate.getMonth() + i,
-          installmentDate.getDate()
-        );
-        
-        if (isWithinInterval(dueDate, { start: today, end: next7Days })) {
+      // Se já passou todas as parcelas, não precisa notificar
+      if (currentInstallment > inst.installmentCount) {
+        return;
+      }
+      
+      // Calcula a data da próxima parcela (currentInstallment)
+      const dayOfMonth = inst.startDate.getDate();
+      const nextPaymentMonth = addMonths(inst.startDate, currentInstallment - 1);
+      const nextPaymentDate = new Date(
+        nextPaymentMonth.getFullYear(),
+        nextPaymentMonth.getMonth(),
+        dayOfMonth
+      );
+      
+      // Se a parcela deste mês já passou, a próxima é do próximo mês
+      const now = new Date();
+      const currentMonthPayment = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        dayOfMonth
+      );
+      
+      let finalNextPaymentDate: Date;
+      if (currentMonthPayment < now && 
+          currentMonthPayment.getMonth() === nextPaymentDate.getMonth() &&
+          currentMonthPayment.getFullYear() === nextPaymentDate.getFullYear()) {
+        finalNextPaymentDate = addMonths(nextPaymentDate, 1);
+      } else {
+        finalNextPaymentDate = nextPaymentDate;
+      }
+      
+      // Só cria notificação se estiver nos próximos 7 dias e não existir ainda
+      if (isWithinInterval(finalNextPaymentDate, { start: today, end: next7Days })) {
+        // Verifica se já existe notificação para esta parcela específica
+        if (!notificationExists(inst.id, currentInstallment)) {
           addNotification(
             "Parcela Próxima",
-            `Parcela ${i + 1}/${inst.installmentCount} de ${inst.description} vence em ${format(dueDate, "dd/MM", { locale: ptBR })}`,
+            `Parcela ${currentInstallment}/${inst.installmentCount} de ${inst.description} vence em ${format(finalNextPaymentDate, "dd/MM", { locale: ptBR })}`,
             "due_date",
             undefined,
-            { installmentId: inst.id, installmentNumber: i + 1 }
+            { installmentId: inst.id, installmentNumber: currentInstallment }
           );
         }
       }

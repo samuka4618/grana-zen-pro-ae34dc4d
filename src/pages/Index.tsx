@@ -36,7 +36,7 @@ const Index = () => {
   // Initialize notification checker
   useNotificationChecker();
   
-  const { transactions, stats, addTransaction, updateTransactionCategory } = useTransactionsStore(selectedDate);
+  const { transactions, stats, addTransaction, updateTransactionCategory, deleteTransaction } = useTransactionsStore(selectedDate);
   const {
     installments,
     addInstallment,
@@ -218,6 +218,7 @@ const Index = () => {
             <TransactionList 
               transactions={transactions} 
               onUpdateCategory={updateTransactionCategory}
+              onDelete={deleteTransaction}
             />
           </div>
 

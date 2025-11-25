@@ -10,6 +10,8 @@ import { ptBR } from "date-fns/locale";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useCreditCardsStore } from "@/hooks/useCreditCardsStore";
 import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
+import { useInstallmentsStore } from "@/hooks/useInstallmentsStore";
+import { useRecurringContractsStore } from "@/hooks/useRecurringContractsStore";
 import { exportToCSV, exportToExcel, exportToPDF, ExportData } from "@/lib/exportUtils";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -26,6 +28,8 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
   const { allTransactions } = useTransactionsStore(new Date());
   const { cards } = useCreditCardsStore();
   const { purchases } = useCreditCardPurchasesStore();
+  const { installments } = useInstallmentsStore();
+  const { contracts } = useRecurringContractsStore();
 
   const getFilteredData = (): ExportData => {
     const filtered = allTransactions.filter(
@@ -50,6 +54,8 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
       },
       creditCards: cards,
       creditCardPurchases: purchases,
+      installments: installments,
+      recurringContracts: contracts,
     };
   };
 
@@ -71,7 +77,7 @@ export function ExportReports({ chartsElementId }: ExportReportsProps) {
           toast.success("Relatório CSV exportado com sucesso!");
           break;
         case 'excel':
-          exportToExcel(data);
+          await exportToExcel(data);
           toast.success("Relatório Excel exportado com sucesso!");
           break;
         case 'pdf':

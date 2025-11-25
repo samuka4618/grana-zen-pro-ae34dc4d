@@ -49,7 +49,30 @@ export function InstallmentsList({ installments, onDelete, onUpdateCategory }: I
           const progress = (installment.currentInstallment / installment.installmentCount) * 100;
           const remainingInstallments = installment.installmentCount - installment.currentInstallment + 1;
           const remainingAmount = installment.installmentAmount * remainingInstallments;
-          const nextPaymentDate = addMonths(installment.startDate, installment.currentInstallment - 1);
+          
+          // Calcula a data da próxima parcela que ainda não foi paga
+          // currentInstallment é a parcela atual (já paga ou em andamento)
+          // A próxima parcela é currentInstallment (0-indexed seria currentInstallment - 1 + 1)
+          const dayOfMonth = installment.startDate.getDate();
+          const now = new Date();
+          
+          // Data da parcela atual (do mês baseado em currentInstallment)
+          const currentPaymentDate = addMonths(installment.startDate, installment.currentInstallment - 1);
+          const currentPaymentDay = new Date(
+            currentPaymentDate.getFullYear(),
+            currentPaymentDate.getMonth(),
+            dayOfMonth
+          );
+          
+          // Se a parcela do mês atual já passou, a próxima é do próximo mês
+          let nextPaymentDate: Date;
+          if (currentPaymentDay < now) {
+            // A parcela deste mês já passou, próxima é do próximo mês
+            nextPaymentDate = addMonths(currentPaymentDay, 1);
+          } else {
+            // A parcela deste mês ainda não passou, próxima é deste mês
+            nextPaymentDate = currentPaymentDay;
+          }
 
           return (
             <div

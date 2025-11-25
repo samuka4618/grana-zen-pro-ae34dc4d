@@ -14,17 +14,54 @@ export function formatCurrency(value: number): string {
 
 /**
  * Remove formatação de moeda e converte para número
- * @param value - String formatada (R$ 1.234,56 ou 1.234,56 ou 1234,56)
+ * @param value - String formatada (R$ 1.234,56 ou 1.234,56 ou 1234,56 ou 2000)
  * @returns Número decimal
  */
 export function parseCurrency(value: string): number {
+  if (!value || value.trim() === '') return 0;
+  
   // Remove tudo exceto números, vírgula e pontos
   const cleaned = value.replace(/[^\d,.-]/g, '');
   
-  // Trata formato brasileiro (vírgula como decimal)
-  const normalized = cleaned
-    .replace(/\./g, '') // Remove pontos de milhar
-    .replace(',', '.'); // Converte vírgula decimal para ponto
+  if (!cleaned) return 0;
+  
+  // Verifica se tem vírgula ou ponto
+  const hasComma = cleaned.includes(',');
+  const hasDot = cleaned.includes('.');
+  
+  let normalized: string;
+  
+  if (hasComma && hasDot) {
+    // Tem ambos: vírgula é decimal, ponto é milhar (ex: 1.234,56)
+    normalized = cleaned.replace(/\./g, '').replace(',', '.');
+  } else if (hasComma) {
+    // Só tem vírgula: pode ser decimal ou milhar
+    // Se vírgula está nas últimas 3 posições, é decimal (ex: 1234,56)
+    const commaIndex = cleaned.lastIndexOf(',');
+    const afterComma = cleaned.substring(commaIndex + 1);
+    if (afterComma.length <= 2) {
+      // É decimal
+      normalized = cleaned.replace(',', '.');
+    } else {
+      // É milhar, remove vírgula
+      normalized = cleaned.replace(',', '');
+    }
+  } else if (hasDot) {
+    // Só tem ponto: pode ser decimal ou milhar
+    // Se ponto está nas últimas 3 posições, é decimal (ex: 1234.56)
+    const dotIndex = cleaned.lastIndexOf('.');
+    const afterDot = cleaned.substring(dotIndex + 1);
+    if (afterDot.length <= 2) {
+      // É decimal
+      normalized = cleaned;
+    } else {
+      // É milhar, remove ponto
+      normalized = cleaned.replace(/\./g, '');
+    }
+  } else {
+    // Não tem vírgula nem ponto: valor inteiro
+    normalized = cleaned;
+  }
   
   const parsed = parseFloat(normalized);
   return isNaN(parsed) ? 0 : parsed;
@@ -36,21 +73,70 @@ export function parseCurrency(value: string): number {
  * @returns Valor formatado
  */
 export function formatCurrencyInput(value: string): string {
-  // Remove tudo exceto números
-  const numbers = value.replace(/\D/g, '');
+  // Remove tudo exceto números, vírgula e ponto
+  const cleaned = value.replace(/[^\d,.]/g, '');
   
-  if (!numbers) return '';
+  if (!cleaned) return '';
   
-  // Converte para centavos
-  const cents = parseInt(numbers, 10);
-  const amount = cents / 100;
+  // Verifica se já tem vírgula ou ponto (formato decimal)
+  const hasComma = cleaned.includes(',');
+  const hasDot = cleaned.includes('.');
   
-  // Formata
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  if (hasComma || hasDot) {
+    // Se já tem vírgula/ponto, trata como valor decimal
+    let normalized: string;
+    
+    if (hasComma && hasDot) {
+      // Tem ambos: vírgula é decimal, ponto é milhar (ex: 1.234,56)
+      normalized = cleaned.replace(/\./g, '').replace(',', '.');
+    } else if (hasComma) {
+      // Só tem vírgula: verifica se é decimal ou milhar
+      const commaIndex = cleaned.lastIndexOf(',');
+      const afterComma = cleaned.substring(commaIndex + 1);
+      if (afterComma.length <= 2) {
+        // É decimal (ex: 1234,56)
+        normalized = cleaned.replace(',', '.');
+      } else {
+        // É milhar, remove vírgula
+        normalized = cleaned.replace(',', '');
+      }
+    } else {
+      // Só tem ponto: verifica se é decimal ou milhar
+      const dotIndex = cleaned.lastIndexOf('.');
+      const afterDot = cleaned.substring(dotIndex + 1);
+      if (afterDot.length <= 2) {
+        // É decimal (ex: 1234.56)
+        normalized = cleaned;
+      } else {
+        // É milhar, remove ponto
+        normalized = cleaned.replace(/\./g, '');
+      }
+    }
+    
+    const amount = parseFloat(normalized);
+    if (isNaN(amount)) return '';
+    
+    // Formata mantendo até 2 casas decimais
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } else {
+    // Se não tem vírgula/ponto, trata como valor inteiro em reais
+    const numbers = cleaned.replace(/\D/g, '');
+    if (!numbers) return '';
+    
+    const amount = parseInt(numbers, 10);
+    if (isNaN(amount)) return '';
+    
+    // Formata como número inteiro com separadores de milhar
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
 }
 
 /**
