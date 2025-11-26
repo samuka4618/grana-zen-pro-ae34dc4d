@@ -4,16 +4,20 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PlusCircle, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 import { useBankAccountsStore } from "@/hooks/useBankAccountsStore";
 import { transactionSchema } from "@/lib/validations";
 import { AttachmentUpload } from "./AttachmentUpload";
 import { AccountSelector } from "./AccountSelector";
-
 import { CurrencyInput } from "./CurrencyInput";
 import { parseCurrency } from "@/lib/currency";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface QuickAddTransactionProps {
   onAdd: (description: string, amount: number, category: string, type: "income" | "expense", dateOrAttachmentUrl?: string | Date, attachmentUrl?: string, bankAccountId?: string) => void;
@@ -28,6 +32,7 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
   const [category, setCategory] = useState("");
   const [bankAccountId, setBankAccountId] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState<string | undefined>();
+  const [date, setDate] = useState<Date>(new Date());
 
   const activeAccounts = getActiveAccounts();
 
@@ -51,7 +56,7 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
       return;
     }
 
-    onAdd(description, numAmount, category, type, attachmentUrl, undefined, bankAccountId || undefined);
+    onAdd(description, numAmount, category, type, date, attachmentUrl, bankAccountId || undefined);
     toast.success(`Transação de ${type === "income" ? "receita" : "despesa"} adicionada!`);
     
     // Reset form
@@ -60,11 +65,12 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
     setCategory("");
     setBankAccountId("");
     setAttachmentUrl(undefined);
+    setDate(new Date()); // Reset para data atual
   };
 
   return (
-    <Card className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Adicionar Transação</h2>
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Adicionar Transação</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex gap-2">
@@ -122,6 +128,38 @@ export function QuickAddTransaction({ onAdd }: QuickAddTransactionProps) {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="date">Data da Transação</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(selectedDate) => {
+                  if (selectedDate) {
+                    setDate(selectedDate);
+                  }
+                }}
+                locale={ptBR}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {activeAccounts.length > 0 && (
