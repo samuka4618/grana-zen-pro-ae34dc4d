@@ -12,35 +12,117 @@ serve(async (req) => {
   }
 
   try {
-    const { transactions, recurringContracts, installments, creditCards, creditCardPurchases } = await req.json();
+    const { 
+      transactions, 
+      recurringContracts, 
+      installments, 
+      creditCards, 
+      creditCardPurchases,
+      financialStats,
+      analysisDate 
+    } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `Você é um analista financeiro especializado. Analise os dados financeiros fornecidos e gere insights inteligentes em português. 
+    const systemPrompt = `Você é um analista financeiro especializado e experiente. Sua função é analisar dados financeiros detalhadamente e fornecer insights profundos, práticos e acionáveis em português brasileiro.
 
-Foque em:
-1. Padrões de gastos incomuns ou preocupantes
-2. Oportunidades de economia com cartões de crédito (uso de limite, parcelamentos, faturas futuras)
-3. Tendências positivas ou negativas
-4. Sugestões práticas e acionáveis
-5. Alertas sobre categorias com gastos crescentes
-6. Análise de uso de cartões de crédito e impacto nas finanças
-7. Recomendações sobre gestão de parcelamentos e faturas
+Sua análise deve ser COMPLETA e DETALHADA, incluindo:
 
-Seja direto, prático e útil. Forneça no máximo 5 insights mais relevantes.`;
+1. ANÁLISE COMPARATIVA MENSAL
+   - Comparar mês atual vs mês anterior
+   - Identificar tendências de crescimento ou redução
+   - Calcular variações percentuais precisas
+   - Destacar melhorias ou piorias significativas
 
-    const userPrompt = `Analise os seguintes dados financeiros:
+2. ANÁLISE DE CATEGORIAS DE GASTOS
+   - Identificar categorias com maior impacto financeiro
+   - Detectar categorias com crescimento preocupante
+   - Comparar gastos por categoria entre períodos
+   - Sugerir categorias para redução de gastos
 
-Transações: ${JSON.stringify(transactions)}
-Contratos Recorrentes: ${JSON.stringify(recurringContracts)}
-Parcelas: ${JSON.stringify(installments)}
-Cartões de Crédito: ${JSON.stringify(creditCards)}
-Compras no Cartão: ${JSON.stringify(creditCardPurchases)}
+3. ANÁLISE DE CARTÕES DE CRÉDITO
+   - Avaliar uso de limite disponível
+   - Analisar impacto de parcelamentos nas finanças futuras
+   - Calcular comprometimento de renda com faturas
+   - Alertar sobre risco de endividamento
+   - Sugerir estratégias de uso inteligente
 
-Gere insights inteligentes e sugestões de melhoria, considerando especialmente o uso dos cartões de crédito, limites disponíveis, parcelamentos e faturas futuras.`;
+4. ANÁLISE DE PARCELAMENTOS
+   - Calcular impacto total de parcelas futuras
+   - Identificar comprometimento de renda mensal
+   - Avaliar se há excesso de parcelamentos
+   - Sugerir estratégias de quitação
+
+5. ANÁLISE DE CONTRATOS RECORRENTES
+   - Avaliar impacto mensal de contratos fixos
+   - Identificar oportunidades de economia
+   - Comparar receitas vs despesas recorrentes
+
+6. PROJEÇÕES E ALERTAS
+   - Projetar situação financeira para próximos meses
+   - Alertar sobre riscos financeiros
+   - Identificar padrões preocupantes
+   - Destacar oportunidades de economia
+
+7. RECOMENDAÇÕES PRÁTICAS E ACIONÁVEIS
+   - Fornecer sugestões específicas e mensuráveis
+   - Priorizar ações por impacto
+   - Dar metas claras e alcançáveis
+
+FORMATO DA RESPOSTA:
+- Use títulos e subtítulos para organizar
+- Use números e valores monetários formatados (R$ X.XXX,XX)
+- Use porcentagens quando relevante
+- Seja específico e detalhado
+- Mínimo de 8-10 insights relevantes
+- Estruture em seções claras`;
+
+    const { financialStats, analysisDate } = await req.json();
+    
+    const userPrompt = `Analise COMPLETAMENTE os seguintes dados financeiros (data da análise: ${analysisDate || new Date().toLocaleDateString('pt-BR')}):
+
+=== ESTATÍSTICAS PRÉ-CALCULADAS ===
+${JSON.stringify(financialStats, null, 2)}
+
+=== DADOS DETALHADOS ===
+Total de Transações: ${transactions.length}
+Transações (últimas 100 mais relevantes): ${JSON.stringify(transactions.slice(0, 100).map(t => ({
+  data: t.date,
+  descricao: t.description,
+  valor: t.amount,
+  tipo: t.type,
+  categoria: t.category
+})))}
+
+Contratos Recorrentes Ativos: ${recurringContracts.length}
+${JSON.stringify(recurringContracts.filter(c => c.active))}
+
+Parcelas Ativas: ${installments.length}
+${JSON.stringify(installments)}
+
+Cartões de Crédito: ${creditCards.length}
+${JSON.stringify(creditCards.map(c => ({
+  nome: c.name,
+  limite: c.limit,
+  saldo_atual: c.currentBalance,
+  disponivel: c.limit - c.currentBalance,
+  uso_percentual: ((c.currentBalance / c.limit) * 100).toFixed(1) + '%'
+})))}
+
+Compras no Cartão: ${creditCardPurchases.length}
+${JSON.stringify(creditCardPurchases.slice(0, 50))}
+
+=== INSTRUÇÕES ===
+Com base em TODOS esses dados, forneça uma análise COMPLETA, DETALHADA e PROFUNDA. 
+- Use os valores das estatísticas pré-calculadas para fazer comparações precisas
+- Identifique padrões, tendências e anomalias
+- Forneça insights acionáveis e específicos
+- Seja quantitativo (use números, valores, porcentagens)
+- Estruture a resposta em seções organizadas
+- Mínimo de 8-10 insights relevantes e detalhados`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
