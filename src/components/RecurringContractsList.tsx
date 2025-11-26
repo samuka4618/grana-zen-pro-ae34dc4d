@@ -6,6 +6,7 @@ import { RecurringContract } from "@/hooks/useRecurringContractsStore";
 import { CalendarClock, Trash2, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditCategoryDialog } from "./EditCategoryDialog";
+import { formatCurrency } from "@/lib/currency";
 
 interface RecurringContractsListProps {
   contracts: RecurringContract[];
@@ -56,11 +57,11 @@ export function RecurringContractsList({
       <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-lg bg-muted/50">
         <div>
           <p className="text-xs text-muted-foreground">Total Receitas/mês</p>
-          <p className="text-lg font-bold text-success">R$ {totalIncome.toFixed(2)}</p>
+          <p className="text-lg font-bold text-success">{formatCurrency(totalIncome)}</p>
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Total Despesas/mês</p>
-          <p className="text-lg font-bold text-danger">R$ {totalExpenses.toFixed(2)}</p>
+          <p className="text-lg font-bold text-danger">{formatCurrency(totalExpenses)}</p>
         </div>
       </div>
 
@@ -126,7 +127,7 @@ export function RecurringContractsList({
                   contract.type === "income" ? "text-success" : "text-danger"
                 )}
               >
-                {contract.type === "income" ? "+" : "-"}R$ {contract.amount.toFixed(2)}
+                {contract.type === "income" ? "+" : "-"}{formatCurrency(contract.amount)}
               </span>
             </div>
           </div>

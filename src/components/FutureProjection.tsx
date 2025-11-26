@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { RecurringContract } from "@/hooks/useRecurringContractsStore";
+import { formatCurrency } from "@/lib/currency";
 
 interface ProjectionMonth {
   month: Date;
@@ -37,11 +38,11 @@ export function FutureProjection({ projections, recurringExpenses, recurringInco
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="flex items-center gap-1">
               <TrendingUp className="h-3 w-3 text-success" />
-              <span className="font-semibold text-success">+R$ {recurringIncome.toFixed(2)}</span>
+              <span className="font-semibold text-success">+{formatCurrency(recurringIncome)}</span>
             </div>
             <div className="flex items-center gap-1">
               <TrendingDown className="h-3 w-3 text-danger" />
-              <span className="font-semibold text-danger">-R$ {recurringExpenses.toFixed(2)}</span>
+              <span className="font-semibold text-danger">-{formatCurrency(recurringExpenses)}</span>
             </div>
           </div>
         </div>
@@ -97,11 +98,11 @@ export function FutureProjection({ projections, recurringExpenses, recurringInco
                         <p className="text-xs text-muted-foreground">Receitas</p>
                       </div>
                       <p className="font-semibold text-success">
-                        R$ {totalIncome.toFixed(2)}
+                        {formatCurrency(totalIncome)}
                       </p>
                       {recurringIncome > 0 && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          Fixo: R$ {recurringIncome.toFixed(2)}
+                          Fixo: {formatCurrency(recurringIncome)}
                         </p>
                       )}
                     </div>
@@ -112,11 +113,11 @@ export function FutureProjection({ projections, recurringExpenses, recurringInco
                         <p className="text-xs text-muted-foreground">Despesas</p>
                       </div>
                       <p className="font-semibold text-danger">
-                        R$ {totalExpenses.toFixed(2)}
+                        {formatCurrency(totalExpenses)}
                       </p>
                       {recurringExpenses > 0 && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          Fixo: R$ {recurringExpenses.toFixed(2)}
+                          Fixo: {formatCurrency(recurringExpenses)}
                         </p>
                       )}
                     </div>
@@ -131,7 +132,7 @@ export function FutureProjection({ projections, recurringExpenses, recurringInco
                           isPositive ? "text-success" : "text-danger"
                         )}
                       >
-                        {isPositive ? "+" : ""}R$ {totalBalance.toFixed(2)}
+                        {isPositive ? "+" : ""}{formatCurrency(totalBalance)}
                       </span>
                     </div>
                   </div>

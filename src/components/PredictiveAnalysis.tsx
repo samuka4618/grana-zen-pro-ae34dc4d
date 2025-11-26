@@ -5,6 +5,7 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, isWithinInterva
 import { ptBR } from "date-fns/locale";
 import { AlertTriangle, TrendingUp, Activity } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrency } from "@/lib/currency";
 
 interface PredictiveAnalysisProps {
   allTransactions: Transaction[];
@@ -113,11 +114,11 @@ export function PredictiveAnalysis({ allTransactions, recurringExpenses, recurri
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Média de Despesas (3 meses)</p>
-            <p className="text-lg font-bold text-danger">R$ {predictions.avgExpenses.toFixed(2)}</p>
+            <p className="text-lg font-bold text-danger">{formatCurrency(predictions.avgExpenses)}</p>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Média de Receitas (3 meses)</p>
-            <p className="text-lg font-bold text-success">R$ {predictions.avgIncome.toFixed(2)}</p>
+            <p className="text-lg font-bold text-success">{formatCurrency(predictions.avgIncome)}</p>
           </div>
         </div>
 
@@ -130,16 +131,16 @@ export function PredictiveAnalysis({ allTransactions, recurringExpenses, recurri
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div>
                   <p className="text-muted-foreground">Receitas</p>
-                  <p className="font-medium text-success">R$ {month.income.toFixed(2)}</p>
+                  <p className="font-medium text-success">{formatCurrency(month.income)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Despesas</p>
-                  <p className="font-medium text-danger">R$ {month.expenses.toFixed(2)}</p>
+                  <p className="font-medium text-danger">{formatCurrency(month.expenses)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Saldo</p>
                   <p className={`font-medium ${month.balance >= 0 ? 'text-success' : 'text-danger'}`}>
-                    R$ {month.balance.toFixed(2)}
+                    {formatCurrency(month.balance)}
                   </p>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfMonth, eachDayOfInterval, endOfMonth, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatCurrency, formatCurrencyForChart } from "@/lib/currency";
 
 interface IncomeVsExpensesProps {
   transactions: Transaction[];
@@ -52,10 +53,10 @@ export function IncomeVsExpenses({ transactions, selectedMonth }: IncomeVsExpens
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
-            tickFormatter={(value) => `R$ ${value}`}
+            tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
           />
           <Tooltip
-            formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+            formatter={(value: number) => formatCurrency(value)}
             contentStyle={{
               backgroundColor: "hsl(var(--card))",
               border: "1px solid hsl(var(--border))",

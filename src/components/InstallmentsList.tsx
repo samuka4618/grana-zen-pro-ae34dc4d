@@ -8,6 +8,7 @@ import { format, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { EditCategoryDialog } from "./EditCategoryDialog";
+import { formatCurrency } from "@/lib/currency";
 
 interface InstallmentsListProps {
   installments: Installment[];
@@ -126,7 +127,7 @@ export function InstallmentsList({ installments, onDelete, onUpdateCategory }: I
                     Parcela {installment.currentInstallment}/{installment.installmentCount}
                   </span>
                   <span className="font-semibold">
-                    R$ {installment.installmentAmount.toFixed(2)}/mês
+                    {formatCurrency(installment.installmentAmount)}/mês
                   </span>
                 </div>
                 <Progress value={progress} className="h-2" />
@@ -143,7 +144,7 @@ export function InstallmentsList({ installments, onDelete, onUpdateCategory }: I
                     "font-semibold",
                     installment.type === "income" ? "text-success" : "text-danger"
                   )}>
-                    R$ {remainingAmount.toFixed(2)}
+                    {formatCurrency(remainingAmount)}
                   </p>
                 </div>
               </div>

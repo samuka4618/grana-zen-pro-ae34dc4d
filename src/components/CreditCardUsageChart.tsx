@@ -3,6 +3,7 @@ import { useCreditCardsStore } from "@/hooks/useCreditCardsStore";
 import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 export function CreditCardUsageChart() {
   const { cards } = useCreditCardsStore();
@@ -69,7 +70,7 @@ export function CreditCardUsageChart() {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+            formatter={(value: number) => formatCurrency(value)}
             contentStyle={{
               backgroundColor: "hsl(var(--background))",
               border: "1px solid hsl(var(--border))",
@@ -91,7 +92,7 @@ export function CreditCardUsageChart() {
               <span className="text-sm font-medium">{card.name}</span>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold">R$ {card.used.toFixed(2)} / R$ {card.limit.toFixed(2)}</p>
+              <p className="text-sm font-semibold">{formatCurrency(card.used)} / {formatCurrency(card.limit)}</p>
               <p className="text-xs text-muted-foreground">{card.usagePercentage}% usado</p>
             </div>
           </div>

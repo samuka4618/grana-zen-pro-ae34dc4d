@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Transaction } from "@/hooks/useTransactionsStore";
 import { useMemo } from "react";
 import { TrendingUp, TrendingDown, Calendar, Target, AlertCircle } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 interface FinancialInsightsProps {
   transactions: Transaction[];
@@ -61,7 +62,7 @@ export function FinancialInsights({ transactions }: FinancialInsightsProps) {
           <div className="flex-1">
             <p className="font-medium text-sm">Gasto Médio por Transação</p>
             <p className="text-2xl font-bold text-danger">
-              R$ {insights.avgExpense.toFixed(2)}
+              {formatCurrency(insights.avgExpense)}
             </p>
           </div>
         </div>
@@ -71,7 +72,7 @@ export function FinancialInsights({ transactions }: FinancialInsightsProps) {
           <div className="flex-1">
             <p className="font-medium text-sm">Receita Média por Transação</p>
             <p className="text-2xl font-bold text-success">
-              R$ {insights.avgIncome.toFixed(2)}
+              {formatCurrency(insights.avgIncome)}
             </p>
           </div>
         </div>
@@ -84,7 +85,7 @@ export function FinancialInsights({ transactions }: FinancialInsightsProps) {
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline">{insights.topCategory.name}</Badge>
                 <span className="text-lg font-bold text-danger">
-                  R$ {insights.topCategory.amount.toFixed(2)}
+                  {formatCurrency(insights.topCategory.amount)}
                 </span>
               </div>
             </div>

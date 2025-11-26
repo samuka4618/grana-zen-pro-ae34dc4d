@@ -5,6 +5,7 @@ import { CreditCard, TrendingUp, DollarSign, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 import { addMonths } from "date-fns";
+import { formatCurrency } from "@/lib/currency";
 
 interface CreditCardStatsCardsProps {
   currentMonth: Date;
@@ -65,7 +66,7 @@ export function CreditCardStatsCards({ currentMonth }: CreditCardStatsCardsProps
           <DollarSign className="h-4 w-4 text-success" />
         </div>
         <p className="text-2xl sm:text-3xl font-bold text-success">
-          R$ {stats.totalAvailable.toFixed(0)}
+          {formatCurrency(stats.totalAvailable)}
         </p>
         <div className="flex items-center gap-2 mt-1">
           <div className="flex-1 bg-muted rounded-full h-1.5">
@@ -89,7 +90,7 @@ export function CreditCardStatsCards({ currentMonth }: CreditCardStatsCardsProps
           <Calendar className="h-4 w-4 text-danger" />
         </div>
         <p className="text-2xl sm:text-3xl font-bold text-danger">
-          R$ {stats.currentMonthTotal.toFixed(0)}
+          {formatCurrency(stats.currentMonthTotal)}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
           Vencimentos este mês
@@ -102,7 +103,7 @@ export function CreditCardStatsCards({ currentMonth }: CreditCardStatsCardsProps
           <TrendingUp className="h-4 w-4 text-warning" />
         </div>
         <p className="text-2xl sm:text-3xl font-bold text-warning">
-          R$ {stats.nextMonthTotal.toFixed(0)}
+          {formatCurrency(stats.nextMonthTotal)}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
           Previsão mês seguinte

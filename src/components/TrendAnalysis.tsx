@@ -5,6 +5,7 @@ import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval } from "d
 import { ptBR } from "date-fns/locale";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { formatCurrency, formatCurrencyForChart } from "@/lib/currency";
 
 interface TrendAnalysisProps {
   allTransactions: Transaction[];
@@ -61,7 +62,7 @@ export function TrendAnalysis({ allTransactions }: TrendAnalysisProps) {
           />
           <YAxis 
             className="text-xs"
-            tickFormatter={(value) => `R$ ${value.toFixed(0)}`}
+            tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
           />
           <Tooltip
             contentStyle={{
@@ -69,7 +70,7 @@ export function TrendAnalysis({ allTransactions }: TrendAnalysisProps) {
               border: "1px solid hsl(var(--border))",
               borderRadius: "8px",
             }}
-            formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+            formatter={(value: number) => formatCurrency(value)}
           />
           <Legend />
           <Line

@@ -12,6 +12,7 @@ import { parseOFX } from "@/lib/parsers/ofxParser";
 import { useTransactionsStore } from "@/hooks/useTransactionsStore";
 import { useCategoriesStore } from "@/hooks/useCategoriesStore";
 import { toast } from "sonner";
+import { formatCurrency } from "@/lib/currency";
 
 export function ImportData() {
   const [file, setFile] = useState<File | null>(null);
@@ -194,7 +195,7 @@ export function ImportData() {
                           </Badge>
                         </TableCell>
                         <TableCell className="font-medium">
-                          R$ {transaction.amount.toFixed(2)}
+                          {formatCurrency(transaction.amount)}
                         </TableCell>
                         <TableCell>
                           <Select

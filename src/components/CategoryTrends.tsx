@@ -5,6 +5,7 @@ import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval } from "d
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { PieChart } from "lucide-react";
+import { formatCurrency, formatCurrencyForChart } from "@/lib/currency";
 
 interface CategoryTrendsProps {
   allTransactions: Transaction[];
@@ -72,7 +73,7 @@ export function CategoryTrends({ allTransactions }: CategoryTrendsProps) {
             <XAxis dataKey="month" className="text-xs" />
             <YAxis 
               className="text-xs"
-              tickFormatter={(value) => `R$ ${value.toFixed(0)}`}
+              tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
             />
             <Tooltip
               contentStyle={{
@@ -80,7 +81,7 @@ export function CategoryTrends({ allTransactions }: CategoryTrendsProps) {
                 border: "1px solid hsl(var(--border))",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+              formatter={(value: number) => formatCurrency(value)}
             />
             <Legend />
             {chartData.categories.map((category, index) => (

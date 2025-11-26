@@ -163,3 +163,16 @@ export function formatNumber(value: number): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+/**
+ * Formata valor monetário para uso em gráficos (sem símbolo R$)
+ * @param value - Valor numérico
+ * @param decimals - Número de casas decimais (padrão: 0 para eixos, 2 para tooltips)
+ * @returns String formatada (14.725,80 ou 14.726)
+ */
+export function formatCurrencyForChart(value: number, decimals: number = 0): string {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore";
 import { PieChart as PieChartIcon } from "lucide-react";
 import { useMemo } from "react";
+import { formatCurrency } from "@/lib/currency";
 
 interface CategorySpendingCardProps {
   currentMonth: Date;
@@ -70,7 +71,7 @@ export function CategorySpendingCard({ currentMonth }: CategorySpendingCardProps
                   <Badge variant="outline">{item.category}</Badge>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold">R$ {item.amount.toFixed(2)}</p>
+                  <p className="text-sm font-semibold">{formatCurrency(item.amount)}</p>
                   <p className="text-xs text-muted-foreground">{item.percentage}%</p>
                 </div>
               </div>

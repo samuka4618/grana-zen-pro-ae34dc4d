@@ -8,6 +8,7 @@ import { useCreditCardPurchasesStore } from "@/hooks/useCreditCardPurchasesStore
 import { format, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
+import { formatCurrency } from "@/lib/currency";
 
 interface CreditCardInvoiceProps {
   currentMonth: Date;
@@ -78,7 +79,7 @@ export function CreditCardInvoice({ currentMonth }: CreditCardInvoiceProps) {
                   </Badge>
                 )}
               </div>
-              <p className="text-3xl font-bold">R$ {invoiceData.total.toFixed(2)}</p>
+              <p className="text-3xl font-bold">{formatCurrency(invoiceData.total)}</p>
             </div>
 
             <div className="space-y-2">
@@ -105,7 +106,7 @@ export function CreditCardInvoice({ currentMonth }: CreditCardInvoiceProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-danger">
-                        R$ {item.installmentAmount.toFixed(2)}
+                        {formatCurrency(item.installmentAmount)}
                       </span>
                       <Button
                         variant="ghost"

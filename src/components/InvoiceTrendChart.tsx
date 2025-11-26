@@ -7,6 +7,7 @@ import { Activity } from "lucide-react";
 import { useState, useMemo } from "react";
 import { format, subMonths, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatCurrency, formatCurrencyForChart } from "@/lib/currency";
 
 export function InvoiceTrendChart() {
   const { getActiveCards } = useCreditCardsStore();
@@ -96,7 +97,7 @@ export function InvoiceTrendChart() {
               />
               <YAxis 
                 className="text-xs"
-                tickFormatter={(value) => `R$ ${value.toFixed(0)}`}
+                tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
               />
               <Tooltip
                 contentStyle={{
@@ -105,7 +106,7 @@ export function InvoiceTrendChart() {
                   borderRadius: "8px",
                 }}
                 formatter={(value: number, name: string) => {
-                  if (name === "total") return [`R$ ${value.toFixed(2)}`, "Total da Fatura"];
+                  if (name === "total") return [formatCurrency(value), "Total da Fatura"];
                   return [value, "Lançamentos"];
                 }}
               />

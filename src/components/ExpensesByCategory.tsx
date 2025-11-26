@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Transaction } from "@/hooks/useTransactionsStore";
 import { useMemo } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { formatCurrency } from "@/lib/currency";
 
 interface ExpensesByCategoryProps {
   transactions: Transaction[];
@@ -63,7 +64,7 @@ export function ExpensesByCategory({ transactions }: ExpensesByCategoryProps) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => `R$ ${value.toFixed(2)}`}
+            formatter={(value: number) => formatCurrency(value)}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -79,7 +80,7 @@ export function ExpensesByCategory({ transactions }: ExpensesByCategoryProps) {
               <span>{item.name}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium">R$ {item.value.toFixed(2)}</span>
+              <span className="font-medium">{formatCurrency(item.value)}</span>
               <span className="text-muted-foreground">
                 ({((item.value / total) * 100).toFixed(1)}%)
               </span>

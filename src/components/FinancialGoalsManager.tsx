@@ -10,6 +10,7 @@ import { Transaction } from "@/hooks/useTransactionsStore";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { formatCurrency } from "@/lib/currency";
 
 interface FinancialGoalsManagerProps {
   transactions: Transaction[];
@@ -135,7 +136,7 @@ export function FinancialGoalsManager({ transactions, currentMonth }: FinancialG
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Meta: R$ {goal.targetAmount.toFixed(2)}
+                      Meta: {formatCurrency(goal.targetAmount)}
                     </p>
                   </div>
                   <Button
@@ -149,7 +150,7 @@ export function FinancialGoalsManager({ transactions, currentMonth }: FinancialG
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Gasto: R$ {progress.spent.toFixed(2)}</span>
+                    <span>Gasto: {formatCurrency(progress.spent)}</span>
                     <span className={
                       progress.status === "danger" ? "text-danger" :
                       progress.status === "warning" ? "text-warning" :

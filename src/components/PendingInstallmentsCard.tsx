@@ -6,6 +6,7 @@ import { Clock, Calendar } from "lucide-react";
 import { format, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useMemo } from "react";
+import { formatCurrency } from "@/lib/currency";
 
 export function PendingInstallmentsCard() {
   const { purchases } = useCreditCardPurchasesStore();
@@ -62,7 +63,7 @@ export function PendingInstallmentsCard() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-danger">
-                    R$ {item.remainingAmount.toFixed(2)}
+                    {formatCurrency(item.remainingAmount)}
                   </p>
                   <p className="text-xs text-muted-foreground">restante</p>
                 </div>
@@ -74,7 +75,7 @@ export function PendingInstallmentsCard() {
                     {item.paidInstallments}/{item.installments} pagas
                   </span>
                   <span className="font-medium">
-                    {item.remainingInstallments}x de R$ {item.installmentAmount.toFixed(2)}
+                    {item.remainingInstallments}x de {formatCurrency(item.installmentAmount)}
                   </span>
                 </div>
                 <Progress value={item.progress} className="h-2" />
