@@ -29,32 +29,32 @@ interface TransactionListProps {
 
 export function TransactionList({ transactions, onUpdateCategory, onDelete }: TransactionListProps) {
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Transações Recentes</h2>
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold">Transações Recentes</h2>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {transactions.length > 0 ? (
           transactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
             >
-              <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
                 <div className={cn(
-                  "rounded-full p-2",
+                  "rounded-full p-1.5 sm:p-2 flex-shrink-0",
                   transaction.type === "income" ? "bg-success/10" : "bg-danger/10"
                 )}>
                   {transaction.type === "income" ? (
-                    <ArrowUpCircle className="h-5 w-5 text-success" />
+                    <ArrowUpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                   ) : (
-                    <ArrowDownCircle className="h-5 w-5 text-danger" />
+                    <ArrowDownCircle className="h-4 w-4 sm:h-5 sm:w-5 text-danger" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{transaction.description}</p>
-                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <p className="font-medium text-sm sm:text-base truncate">{transaction.description}</p>
+                  <div className="flex items-center gap-1.5 sm:gap-2 mt-1 flex-wrap">
                     <div className="flex items-center gap-1">
                       <Badge variant="secondary" className="text-xs">
                         {transaction.category}
@@ -77,9 +77,9 @@ export function TransactionList({ transactions, onUpdateCategory, onDelete }: Tr
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
                 <p className={cn(
-                  "text-lg font-semibold tabular-nums whitespace-nowrap",
+                  "text-base sm:text-lg font-semibold tabular-nums whitespace-nowrap",
                   transaction.type === "income" ? "text-success" : "text-danger"
                 )}>
                   {transaction.type === "income" ? "+" : "-"}
@@ -92,9 +92,9 @@ export function TransactionList({ transactions, onUpdateCategory, onDelete }: Tr
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>

@@ -60,20 +60,25 @@ export function CategoryTrends({ allTransactions }: CategoryTrendsProps) {
   ];
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <PieChart className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">Gastos por Categoria (Últimos 3 Meses)</h3>
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
+        <PieChart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+        <h3 className="text-base sm:text-lg font-semibold">Gastos por Categoria (Últimos 3 Meses)</h3>
       </div>
 
       {chartData.categories.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData.months}>
+        <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+          <BarChart data={chartData.months} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="month" className="text-xs" />
+            <XAxis dataKey="month" fontSize={10} className="sm:text-xs" />
             <YAxis 
-              className="text-xs"
-              tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
+              fontSize={10}
+              className="sm:text-xs"
+              width={50}
+              tickFormatter={(value) => {
+                const formatted = formatCurrencyForChart(value, 0);
+                return formatted.length > 6 ? formatted.slice(0, 4) + 'k' : formatted;
+              }}
             />
             <Tooltip
               contentStyle={{

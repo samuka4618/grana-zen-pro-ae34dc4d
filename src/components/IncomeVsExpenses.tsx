@@ -37,23 +37,32 @@ export function IncomeVsExpenses({ transactions, selectedMonth }: IncomeVsExpens
   }, [transactions, selectedMonth]);
 
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4">Receitas vs Despesas</h3>
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Receitas vs Despesas</h3>
       
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+      <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+        <BarChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="day"
             stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
+            fontSize={10}
+            className="sm:text-xs"
             tickLine={false}
+            angle={-45}
+            textAnchor="end"
+            height={60}
           />
           <YAxis
             stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
+            fontSize={10}
+            className="sm:text-xs"
             tickLine={false}
-            tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
+            width={50}
+            tickFormatter={(value) => {
+              const formatted = formatCurrencyForChart(value, 0);
+              return formatted.length > 6 ? formatted.slice(0, 4) + 'k' : formatted;
+            }}
           />
           <Tooltip
             formatter={(value: number) => formatCurrency(value)}

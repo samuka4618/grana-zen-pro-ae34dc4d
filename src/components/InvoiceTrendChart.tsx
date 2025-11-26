@@ -53,12 +53,12 @@ export function InvoiceTrendChart() {
 
   if (activeCards.length === 0) {
     return (
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Activity className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Evolução das Faturas</h3>
+      <Card className="p-4 sm:p-6 overflow-hidden">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <h3 className="text-base sm:text-lg font-semibold">Evolução das Faturas</h3>
         </div>
-        <p className="text-sm text-muted-foreground text-center py-8">
+        <p className="text-xs sm:text-sm text-muted-foreground text-center py-6 sm:py-8">
           Nenhum cartão ativo
         </p>
       </Card>
@@ -66,14 +66,14 @@ export function InvoiceTrendChart() {
   }
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-4">
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
         <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Evolução das Faturas</h3>
+          <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <h3 className="text-base sm:text-lg font-semibold">Evolução das Faturas</h3>
         </div>
         <Select value={selectedCardId} onValueChange={setSelectedCardId}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Selecione o cartão" />
           </SelectTrigger>
           <SelectContent>
@@ -88,16 +88,25 @@ export function InvoiceTrendChart() {
 
       {selectedCard && chartData.length > 0 ? (
         <>
-          <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={chartData}>
+          <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+            <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis 
                 dataKey="month" 
-                className="text-xs"
+                fontSize={10}
+                className="sm:text-xs"
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis 
-                className="text-xs"
-                tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
+                fontSize={10}
+                className="sm:text-xs"
+                width={50}
+                tickFormatter={(value) => {
+                  const formatted = formatCurrencyForChart(value, 0);
+                  return formatted.length > 6 ? formatted.slice(0, 4) + 'k' : formatted;
+                }}
               />
               <Tooltip
                 contentStyle={{
@@ -131,17 +140,17 @@ export function InvoiceTrendChart() {
             </ComposedChart>
           </ResponsiveContainer>
 
-          <div className="mt-4 flex items-center justify-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-primary" />
+          <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-primary" />
               <span>Valor da Fatura</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-success" />
-              <span>Quantidade de Lançamentos</span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-success" />
+              <span className="whitespace-nowrap">Quantidade de Lançamentos</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-primary/50" />
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-primary/50" />
               <span>Previsão</span>
             </div>
           </div>

@@ -93,8 +93,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-8">
+    <div className="min-h-screen bg-background safe-area-inset">
+      <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-6 space-y-4 sm:space-y-6 lg:space-y-8 max-w-full overflow-x-hidden">
         {/* Header */}
         <header className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -106,7 +106,7 @@ const Index = () => {
                 Gerencie suas finanças de forma simples e poderosa
               </p>
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors">
               <Button
                 variant="default"
                 size="sm"
@@ -170,7 +170,7 @@ const Index = () => {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Saldo"
             value={adjustedStats.balance}
@@ -204,8 +204,8 @@ const Index = () => {
         {/* Main Content */}
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Left Column - Charts and Lists */}
-          <div id="dashboard-charts" className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div id="dashboard-charts" className="lg:col-span-2 space-y-4 sm:space-y-5 lg:space-y-6 overflow-x-hidden">
+            <div className="grid gap-4 sm:gap-5 lg:gap-6 grid-cols-1 md:grid-cols-2">
               <ExpensesByCategory transactions={transactions} />
               <FinancialInsights transactions={transactions} />
             </div>

@@ -47,22 +47,28 @@ export function TrendAnalysis({ allTransactions }: TrendAnalysisProps) {
   }, [allTransactions]);
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <TrendingUp className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">Evolução dos Últimos 6 Meses</h3>
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
+        <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+        <h3 className="text-base sm:text-lg font-semibold">Evolução dos Últimos 6 Meses</h3>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData}>
+      <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
+        <LineChart data={chartData} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis 
             dataKey="month" 
-            className="text-xs"
+            fontSize={10}
+            className="sm:text-xs"
           />
           <YAxis 
-            className="text-xs"
-            tickFormatter={(value) => `R$ ${formatCurrencyForChart(value, 0)}`}
+            fontSize={10}
+            className="sm:text-xs"
+            width={50}
+            tickFormatter={(value) => {
+              const formatted = formatCurrencyForChart(value, 0);
+              return formatted.length > 6 ? formatted.slice(0, 4) + 'k' : formatted;
+            }}
           />
           <Tooltip
             contentStyle={{
